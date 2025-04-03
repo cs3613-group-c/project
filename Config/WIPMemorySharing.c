@@ -15,7 +15,6 @@
 #define MAX_MESSAGES 10
 #define MAX_MSG_SIZE 256
 #define MSG_BUFFER_SIZE MAX_MSG_SIZE + 10
-#define MAX 9000000000 // 9 billion times
 
 /*Shared Memory Setup:
 Create shared memory segments to store intersection states (e.g., pthread_mutex_t for
@@ -43,42 +42,42 @@ enables the server to enforce access rules and monitor resource usage efficientl
 	D		Semaphore 	3				Locked 			[Train 2, Train 3]
 	E 		Mutex 		1 				Locked 			[Train 4]
 */
-
+//---------------------------------------------------------------------------------------------------
 
 //Input will be in the form of an array of Vectors. I will pretend this array is called inputs.
 //the first input is the name of the intersection, the second input is the # of trains it can handle
 
 int main()
 {
-	printf("Hello\n");
-	
+	//These are test examples while I wait for the parsing information
+	//inputNames is an array of all of the parsed namespace
+	//amount is the number associated with inputNames
+	//So intersectionA:3 would be the first intersection
+	//This should be fixed with the parser
 	const char *inputNames[] = {"A","B","C"};
 	int amount[] = {3,1,2};
-	//const char *names[input.length];
 	
 	int fd;
-	int SIZE = 1024;
-	for(int i = 0; i < 3; i++) //hard coded, but fix
+	int SIZE = 1024; //size was chosen arbitraly, I'll fix this later but it ain't broke so I'm not super worried about it
+	
+	for(int i = 0; i < (sizeof(inputNames)/sizeof(inputNames[0])); i++) //for each intersection in the intersection file. This will make a file, assign either a mutex or semaphore to it and close it. It can be opened again with the intersection name
 	{
-		fd = shm_open(inputNames[i], O_CREAT | O_RDWR, 0666);
+		fd = shm_open(inputNames[i], O_CREAT | O_RDWR, 0666); //open a file, assign it to the file descripter
 			
 		/* Set the shared memory object size */
 		ftruncate(fd, SIZE);
 			
-		if(amount[i] > 1)
+		if(amount[i] > 1) //if the intersection can handle more than one train (semaphore)
 		{
-			printf("Printing Sem\n");
 			sem_t * ptr;
 			
-			/* Map the shared memory object into the current address space */
-			ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
+			ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, fd, 0); //Pointer gets memory mapped
 			
-			if(sem_init(ptr,0, amount[i]) == -1)
+			if(sem_init(ptr,0, amount[i]) == -1) //initialize a semaphore to the pointer, the amount is equal to the amount parsed. 
 				printf("Semaphore Failed\n");
 		}
-		else //mutex
+		else //mutex - its worth noting that errors could occur if the intersections are parsed as less than 1, I didn't account for that.
 		{
-			printf("Printing Mutex\n");
 			pthread_mutex_t * ptr;
 			
 			ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
@@ -86,11 +85,8 @@ int main()
 			if(pthread_mutex_init(ptr, NULL) == -1)
 				printf("Mutex failed\n");
 		
-		}
-	
-		//munmap(ptr,size);
-		
-		close(fd);
+		}	
+		close(fd); //close the file
 	}	
 
 	//TESTING
@@ -109,7 +105,7 @@ int main()
 		close(fd);
 	}
 	
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < 2; i++) //didn't finish the mutex, will do later
 	{
 		fd = shm_open(inputNames[1], O_CREAT | O_RDWR, 0666);
 		pthread_mutex_t * ptr (pthread_mutex_t *) mmap(0, SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
