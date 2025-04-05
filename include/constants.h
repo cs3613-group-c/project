@@ -4,7 +4,6 @@
 * Description: Set of constants in the system. Add as needed.
 *
 */
-
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
