@@ -3,21 +3,13 @@
 // I think the parent process is going to manage the shared memory space(?)
 //
 // TODO: I'll need to read the project document more just to make sure I have the specifications right!
-typedef struct {
+#include "message.h"
 
-} message_queue_t;
-
-void message_acquire(message_queue_t *queue) {
-
-}
+void add_message_to_queue() {}
 
 
-void message_release(message_queue_t *queue) {
+void send_message(const char* src, message_t message) {
 
 }
 
-void message_grant(message_queue_t *queue) {}
-
-void message_wait(message_queue_t *queue) {}
-
-void message_deny(message_queue_t * queue) {}
+void handle_message(message_t message) {}
