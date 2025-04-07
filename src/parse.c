@@ -1,6 +1,15 @@
+//  Group C
+//  Author: Gabe Cornelius
+//  Email: gabriel.j.cornelius@okstate.edu
+//  Date: 4/6/2025
+//  Description: File parsing functions, extracts data from intersections.txt and trains.txt
+//  and stores it in arrays to be passed as a "Parse" struct to the calling function. 
+// 	Additionally, passes an error code indicating which errors have occured
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "../include/parse.h"
 #include "../include/structures.h"
 
  Parse fileparse(const char* intersections_file, const char* trains_file){	
@@ -207,16 +216,3 @@ Error Codes:
 		check for duplicate route stops
  */
 
-int main(){
-// 	printf("Entering fileparser\n");
-// 	struct ret parse;
-	Parse ret = fileparse("../input/intersections.txt", "../input/trains.txt");
-// 	if (parse.error > 0)
-// 		printf("Error with config files\n");
-// 	else
-// 		printf("Normal exit of fileparser\n");
-	
-	// printf("parse.sctn = %d\n", parse.sctn[0]);
-// 	printf("parse.route = %c\n", parse.route[1][0]);
- 	return 0;
- }
