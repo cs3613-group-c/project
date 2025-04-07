@@ -14,6 +14,10 @@ clean:
 	rm -f src/*.o tests/*.o output/* train_simulation 
 
 # TODO: Figure out how to make this more expandable
-message_test: $(OBJS)
-	@gcc -o output/message_test src/message.o tests/message_test.o
+message_test: src/message.o tests/message_test.o 
+	@$(CC) -o output/message_test src/message.o tests/message_test.o
 	./output/message_test
+
+parse_test: tests/Parse_tests/parse.o 
+	@$(CC) -o output/parse_test tests/Parse_tests/parse.o
+	./output/parse_test

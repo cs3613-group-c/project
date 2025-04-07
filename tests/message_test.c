@@ -76,15 +76,14 @@ void client_a() {
   CLIENT_MSG("A", "Initialized client");
 
   // Attempt to acquire Intersection D
-  send_request("A",
-               (message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "D"}});
+  send_request(request_queue, "A",(message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "D"}});
 }
 
 void client_b() {
   CLIENT_MSG("B", "Initialized client");
 
   // Attempt to acquire Intersection E
-  send_request("B",
+  send_request(request_queue, "B",
                (message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "E"}});
 }
 
@@ -92,14 +91,12 @@ void client_c() {
   CLIENT_MSG("C", "Initialized client");
 
   // Attempt to acquire Intersection E
-  send_request("C",
+  send_request(request_queue, "C",
                (message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "F"}});
 }
 
 int main() {
-
-  printf("hello, world!");
-
+  printf("hello, world\n");
   return 0;
   request_queue = create_queue(MAX_QUEUE_SIZE);
   response_queue = create_queue(MAX_QUEUE_SIZE);
