@@ -20,18 +20,21 @@ bool *running;
 message_queue_t *create_queue(size_t capacity) {
   // Create our dynamic array for our queue
   message_t *items = mmap(NULL, capacity * sizeof(message_t),
-                          PROT_READ | PROT_WRITE, MAP_SHARED, 0, 0);
+                          PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
   // Create a separate mapping in memory for our actual queue
   message_queue_t *queue = mmap(NULL, sizeof(message_queue_t),
-                                PROT_READ | PROT_WRITE, MAP_SHARED, 0, 0);
+                                PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-  // Create our queue via our shared memory & initialize our data with it
+
+  // Initialize our queue data 
+  queue_init(queue);
+
+
+
+  // Initialize items & capacity of queue 
   queue->items = items;
   queue->capacity = capacity;
-
-  // Initialize our other queue data
-  queue_init(queue);
   return queue;
 }
 
@@ -45,59 +48,52 @@ void destroy_queue(message_queue_t *queue) {
 void server_handler(int sig) { *running = false; }
 
 void server() {
-  while (*running) {
+  while (*running) { 
     // if we don't have a message to process, ignore it
     if (request_queue->length <= 0)
       continue;
 
     message_t msg = queue_dequeue(request_queue);
-
-    switch (msg.type) {
-    case REQUEST_ACQUIRE:
-    case REQUEST_RELEASE:
-      printf("[INFO] Received request: %s", message_type_name(msg.type));
-      break;
-    default:
-      printf("[WARNING] RECEIVED UNHANDLED MESSAGE: %s",
-             message_type_name(msg.type));
-    }
+    handle_request(request_queue, msg);
   }
 }
 
 // Simple macros that will make logging our processes easy
-#define CLIENT_MSG(name, msg) printf("[CLIENT: " name "] " msg)
+#define CLIENT_MSG(name, msg) printf("[CLIENT: " name "] " msg "\n")
 #define LOG_CLIENT(name, format, ...)                                          \
-  printf("[CLIENT: " name "] " format, __VA_ARGS__)
+  printf("[CLIENT: " name "] " format "\n", __VA_ARGS__)
 
-#define SERVER_MSG(name, msg) printf("[SERVER] " msg)
-#define LOG_SERVER(format, ...) printf("[SERVER]" format, __VA_ARGS__)
+#define SERVER_MSG(name, msg) printf("[SERVER] " msg "\n")
+#define LOG_SERVER(format, ...) printf("[SERVER]" format "\n", __VA_ARGS__)
 
 void client_a() {
   CLIENT_MSG("A", "Initialized client");
 
   // Attempt to acquire Intersection D
-  send_request(request_queue, "A",(message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "D"}});
+  send_request(request_queue, (message_t){.type = REQUEST_ACQUIRE, .src = "A", .dst = "SERVER", .data = {.acquire = "D"}});
+
+  message_t msg = wait_for_response(response_queue, "A"); 
 }
 
 void client_b() {
   CLIENT_MSG("B", "Initialized client");
 
   // Attempt to acquire Intersection E
-  send_request(request_queue, "B",
-               (message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "E"}});
+  send_request(request_queue, (message_t){.type = REQUEST_ACQUIRE, .src = "B", .dst = "SERVER", .data = {.acquire = "E"}});
+
+  message_t msg = wait_for_response(response_queue, "B"); 
 }
 
 void client_c() {
   CLIENT_MSG("C", "Initialized client");
 
   // Attempt to acquire Intersection E
-  send_request(request_queue, "C",
-               (message_t){.type = REQUEST_ACQUIRE, .data = {.acquire = "F"}});
+  send_request(request_queue, (message_t){.type = REQUEST_ACQUIRE, .src = "C", .dst = "SERVER", .data = {.acquire = "F"}});
+
+  message_t msg = wait_for_response(response_queue, "C"); 
 }
 
 int main() {
-  printf("hello, world\n");
-  return 0;
   request_queue = create_queue(MAX_QUEUE_SIZE);
   response_queue = create_queue(MAX_QUEUE_SIZE);
 
@@ -105,7 +101,7 @@ int main() {
   // set our running state to true -- we should care about sync here but this is
   // just a small demonstration
   running =
-      mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED, 0, 0);
+      mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
   *running = true;
 
   // Run three separate clients with different behaviors

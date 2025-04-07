@@ -15,6 +15,7 @@ clean:
 
 # TODO: Figure out how to make this more expandable
 message_test: src/message.o tests/message_test.o 
+	@mkdir -p output/
 	@$(CC) -o output/message_test src/message.o tests/message_test.o
 	./output/message_test
 

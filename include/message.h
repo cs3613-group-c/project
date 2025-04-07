@@ -55,19 +55,20 @@ typedef union {
 } message_data_t;
 
 /*
- * The actual tagged union that will store our message type and associated data
- * Both requests & responses are held as mesasges. It is up to the respective
- * queues to process the requests they want
+ * The actual tagged union that will store our message type, the source of the message, the destination for the message, and the associated data
+ * Both requests & responses are held as mesasges. It is up to the respective queues to process the requests they want
  * */
 typedef struct {
   message_type_t type;
+  const char* src;
+  const char* dst;
   message_data_t data;
 } message_t;
 
 /* A message that will indicate an open space in our message queue */
 #define MSG_OPEN_SLOT                                                          \
   (message_t) {                                                                \
-    MESSAGE_OPEN_SLOT, { .open_slot = NULL }                                   \
+    MESSAGE_OPEN_SLOT, "", "", { .open_slot = NULL }                                   \
   }
 
 /*
@@ -110,15 +111,21 @@ int queue_enqueue(message_queue_t *queue, message_t msg);
 /* Dequeues a message from the given queue */
 message_t queue_dequeue(message_queue_t *queue);
 
+/* Peeks at the front-most item in the queue */
+message_t queue_peek(message_queue_t *queue);
+
 /* Puts a message into the request queue to be processed */
-void send_request(message_queue_t *queue, const char *src, message_t message);
+void send_request(message_queue_t *queue, message_t message);
 /* Handles a given message from the request queue */
-void handle_request(message_queue_t *queue, const char *dst, message_t message);
+void handle_request(message_queue_t *queue, message_t message);
 
 /* The response queue's logic for sending messages from the server to the trains
  */
-void send_response(message_queue_t *queue, const char *dst, message_t message);
+void send_response(message_queue_t *queue, message_t message);
 /* The response queue's logic for processing messages */
-void handle_response(message_queue_t *queue, const char *src, message_t message);
+void handle_response(message_queue_t *queue, message_t message);
+
+/* Waits for a response to the given destination before returning */
+message_t wait_for_response(message_queue_t *queue, const char* dst);
 
 #endif
