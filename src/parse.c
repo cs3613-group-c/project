@@ -40,7 +40,7 @@
 			}
 				
 			if ((line[i] != match[i]) && i < sizeof(match) - 1){//fails to match 'Intersection'
-				printf("failed to match Intersection");
+				// printf("failed to match Intersection");
 				ret.error ^= 2;
 				return ret;
 			} 
@@ -63,10 +63,10 @@
 		}
 	} // end while
 	
-	for(int i = 0; i < 26; i++){ //debug print for intersection assignment
-		if(ret.sctn[i] == 0) continue;
-		printf("Intersection = %c, size = %d\n", i + 'A',ret.sctn[i]);
-	}
+	// for(int i = 0; i < 26; i++){ //debug print for intersection assignment
+	// 	if(ret.sctn[i] == 0) continue;
+	// 	printf("Intersection = %c, size = %d\n", i + 'A',ret.sctn[i]);
+	// }
 	
 	//Purpose: Define train names and their routes (ordered list of intersections).
 	//Format: TrainName:Intersection1,Intersection2,...
@@ -76,11 +76,7 @@
 		ret.error ^=4;
         return ret;
     }
-	printf("\n");
-	// fgets(line, sizeof(line), trains);
 	char *tok;
-	
-	
 	
 	{ //scope here to isolate match1[]
 		char match1[] = "Train";
@@ -150,13 +146,13 @@
 					// printf("Line[I] : %c\n", line[i]);
 					// printf("Match[J] : %c\n", match3[j]);
 					if(match3[j] != line[i] && j < sizeof(match2) - 1){
-						printf("break @ i %d\nline[i]: %c\n", i , line[i]);
+						// printf("break @@ i %d\nline[i]: %c\n", i , line[i]);
 						ret.error ^= 8; //set error bit 3 for formatting issue with trains.txt
 						break;
 					}
 					
 					if(match3[j] !=  line[i]){
-						printf("\nTrain: %djunct: %d\n",train, line[i] - 'A');
+						// printf("\nTrain: %djunct: %d\n",train, line[i] - 'A');
 						ret.route[train][stop] = line[i];
 						stop++;
 						j = 0;
@@ -176,19 +172,19 @@
 	//ret.sctn = sctn;
 	//*ret.route = *route;
 	
-	for(int i = 0; i < 10; i++){
-		if(ret.route[i][0] == 0) continue;
-		printf("\nTrain %d:\n", i);
-		// printf("j: %d", j);
+	// for(int i = 0; i < 10; i++){
+	// 	if(ret.route[i][0] == 0) continue;
+	// 	printf("\nTrain %d:\n", i);
+	// 	// printf("j: %d", j);
 	
-		for(int j = 0; j < 26; j++){
-			//printf("i: %d, j: %d\n", i, j);
-			if(ret.route[i][j] != 0)
-				printf("Sctn: %c, \n", ret.route[i][j]);
+	// 	for(int j = 0; j < 26; j++){
+	// 		//printf("i: %d, j: %d\n", i, j);
+	// 		if(ret.route[i][j] != 0)
+	// 			printf("Sctn: %c, \n", ret.route[i][j]);
 			
-		} 
+	// 	} 
 		
-	}
+	// }
 	
 	return ret;
 }
