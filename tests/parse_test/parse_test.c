@@ -6,6 +6,9 @@
 int main(){
 	Parse ret = fileparse("input/intersections.txt", "input/trains.txt");
 	
+	if(ret.error > 0) printf("parse completed with errors\n\n");
+	else printf("parse completed without errors\n\n");
+	
 	for(int i = 0; i < 26; i++){ //debug print for intersection assignment
 		if(ret.sctn[i] == 0) continue;
 		printf("Intersection = %c, size = %d\n", i + 'A',ret.sctn[i]);
