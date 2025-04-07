@@ -9,5 +9,11 @@ train_simulation: $(OBJS)
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
+# TODO: Grab all output binaries?
 clean:
-	rm -f src/*.o train_simulation
+	rm -f src/*.o tests/*.o output/* train_simulation 
+
+# TODO: Figure out how to make this more expandable
+message_test: $(OBJS)
+	@gcc -o output/message_test src/message.o tests/message_test.o
+	./output/message_test

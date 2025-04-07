@@ -8,13 +8,8 @@
 *
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/msg.h>
-#include "../include/ipc.h"
-#include "../include/utils.h"
 
 extern int msgq_id;
 extern SharedMemory* shared_memory;

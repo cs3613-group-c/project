@@ -12,8 +12,6 @@
 #include <string.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include "../include/ipc.h"
-#include "../include/utils.h"
 #include "../include/structures.h"
 
 extern SharedMemory* shared_memory;

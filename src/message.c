@@ -4,7 +4,25 @@
 //
 // TODO: I'll need to read the project document more just to make sure I have the specifications right!
 #include <stddef.h>
-#include "message.h"
+#include "../include/message.h"
+
+const char* message_type_name(message_type_t type) {
+    switch (type) {
+        case MESSAGE_OPEN_SLOT:
+            return "[OPEN]";
+        case REQUEST_ACQUIRE:
+            return "REQUEST_ACQUIRE";
+        case REQUEST_RELEASE:
+            return "REQUEST_RELEASE";
+        case RESPONSE_GRANT:
+            return "RESPONSE_GRANT";
+        case RESPONSE_WAIT:
+            return "RESPONSE_WAIT";
+        case RESPONSE_DENY:
+            return "RESPONSE_DENY";
+    }
+}
+
 
 message_queue_t *queue_alloc() {
     // TODO: allocate a queue
@@ -55,10 +73,18 @@ message_t queue_dequeue(message_queue_t *queue) {
     return msg;
 }
 
-void send_message(const char* src, message_t message) {
+void send_request(message_queue_t *queue, const char *src, message_t message) {
+    
+}
+
+void handle_request(message_queue_t *queue, const char *dst, message_t message) {
 
 }
 
-void handle_message(message_t message) {
+void send_response(message_queue_t *queue, const char *dst, message_t message) {
+
+}
+
+void handle_response(message_queue_t *queue, const char *src, message_t message) {
 
 }
