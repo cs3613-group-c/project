@@ -44,4 +44,9 @@ typedef struct {
     int sim_time;
 } SharedMemory;
 
+typedef struct{
+	int route[10][26], sctn[26];
+	int error;
+} Parse;
+
 #endif

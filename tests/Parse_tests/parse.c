@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "..\include\structures.h"
+#include "../../include/structures.h"
 
- Parse fileparser(){	
+ Parse fileparse(const char* intersections_file, const char* trains_file){	
 	int route[10][26] = {0};
 	// int sctn[26] = {0};
-	Parse ret;
+	Parse ret = {{0},{0}, 0};
+	
 	//File Format: IntersectionName:Capacity
 	char intName[256] = "Intersections.txt";
-	FILE *intersections = fopen(intName, "r");
+	FILE *intersections = fopen(intersections_file, "r");
 	if (intersections == NULL) {
         perror(strcat(intName, " not found"));
 		ret.error ^= 1;
@@ -60,7 +61,7 @@
 	
 	//Purpose: Define train names and their routes (ordered list of intersections).
 	//Format: TrainName:Intersection1,Intersection2,...
-	FILE *trains = fopen("trains.txt", "r");
+	FILE *trains = fopen(trains_file, "r");
 	if (trains == NULL) {
         perror("Error");
 		ret.error ^=4;
@@ -206,16 +207,16 @@ Error Codes:
 		check for duplicate route stops
  */
 
-// int main(){
+int main(){
 // 	printf("Entering fileparser\n");
 // 	struct ret parse;
-// 	parse =	fileparser();
+	Parse ret = fileparse("intersections.txt", "trains.txt");
 // 	if (parse.error > 0)
 // 		printf("Error with config files\n");
 // 	else
 // 		printf("Normal exit of fileparser\n");
 	
-// 	printf("parse.sctn = %d\n", parse.sctn[0]);
-// 	printf("parse.route = %c\n", parse.route[1][0]);
-// 	return 0;
-// }
+	printf("parse.sctn = %d\n", ret.sctn[0]);
+	printf("parse.route = %c\n", ret.route[1][0]);
+ 	return 0;
+ }

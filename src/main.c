@@ -32,8 +32,15 @@ int main() {
     shared_memory = (SharedMemory*)shmat(shm_id, NULL, 0); // Allocate shm
     log_file = fopen("simulation.log", "w"); // Open simulation.log file
 
-    parse_config_files("input/intersections.txt", "input/trains.txt");
-
+    Parse input = fileparse("input/intersections.txt", "input/trains.txt"); //FIXME: Check that these directories work
+    if (input.error > 0){
+        
+        printf("Issue with config file\n");
+        
+    }
+    
+    
+    
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
         pid = fork();
