@@ -18,9 +18,14 @@
 #define MAX_STR_LEN 256
 
  Parse fileparse(const char* intersections_file, const char* trains_file){	
-	int route[10][26] = {0};
-	// int sctn[26] = {0};
-	Parse ret = {{0},{0}, 0};
+	//
+	//Initialize each field in the struct
+	// route[10][26], route_count, sctn[26], sctn_count, error} 
+	Parse ret = {{0},0, {0}, 0, 0};
+	
+	//File Format{ 
+	//				IntersectionName:Capacity
+	// 			 }
 	
 	//File Format: IntersectionName:Capacity
 	char intName[MAX_STR_LEN] = INTERSECTION_FILE_NAME;
@@ -35,22 +40,22 @@
 	int l = 0; //line number for indexing into our sctn array
 	
 	while (fgets(line, sizeof(line), intersections)) {
-		char match[] = "Intersection";
+		char match0[] = "Intersection";
 		char name = ' ';
 		int size = 0;
 		
 		for (int i = 0; i < sizeof(line); i++){
-			if(line[i] == match[i] && i < sizeof(match) - 1){//Currently Matching Intersection
+			if(line[i] == match0[i] && i < sizeof(match0) - 1){//Currently Matching Intersection
 				continue;
 			}
 				
-			if ((line[i] != match[i]) && i < sizeof(match) - 1){//fails to match 'Intersection'
+			if ((line[i] != match0[i]) && i < sizeof(match0) - 1){//fails to match 'Intersection'
 				// printf("failed to match Intersection");
 				ret.error ^= 2;
 				return ret;
 			} 
 			
-			if((line[i] != match[i]) && i == sizeof(match) - 1){ // Finished matching 'Intersection', starting assignments
+			if((line[i] != match0[i]) && i == sizeof(match0) - 1){ // Finished matching 'Intersection', starting assignments
 				int j = line[i] - 'A';
 				if(!(0 <= j && j < 26)){ //check if the index is valid
 					ret.error ^= 2; 
@@ -62,6 +67,8 @@
 				}
 				if(0 <= j && j < 26){ //Successful assignment
 					ret.sctn[j] = line[i+2] - '0';
+					
+					ret.sctn_count++;
 					break;
 				}
 			}
@@ -79,11 +86,10 @@
 		if (trains == NULL) {
 		perror("Error");
 		ret.error ^=4;
-		return ret;
-	}
-
-	char *tok;	
-	{ //scope here to isolate match1[]
+        return ret;
+    }
+	char *tok;
+	
 		char match1[] = "Train";
 		char match2[] = ":Intersection";
 		char match3[] = ",Intersection";
@@ -113,8 +119,9 @@
 					if(match1[i] != line[i] && !m1){
 						m1 = true;
 						j = 0;
-						if( 0 <= line[i] <= 9){
+						if( 1 <= line[i] <= 9){
 							train = line[i] - '0';
+							ret.route_count++;
 							// printf("i %d\nline[i]: %c\n", i , line[i]);
 						}
 						else //failed to provide valid index for trains
@@ -136,7 +143,7 @@
 						m2 = true;
 						j = 0;
 						// printf("\nTrain: %d\nFirst junct: %d\n",train, line[i] - 'A');
-						ret.route[train][stop] = line[i];
+						ret.route[train -1][stop] = line[i];
 						stop++;
 						continue; //skip iterating j
 					}
@@ -158,7 +165,7 @@
 					
 					if(match3[j] !=  line[i]){
 						// printf("\nTrain: %djunct: %d\n",train, line[i] - 'A');
-						ret.route[train][stop] = line[i];
+						ret.route[train - 1][stop] = line[i];
 						stop++;
 						j = 0;
 						continue;
@@ -172,24 +179,41 @@
 			
 			
 		} //end line reader while
-	} //end trains.txt scope
 	
-	//ret.sctn = sctn;
-	//*ret.route = *route;
+
 	
-	// for(int i = 0; i < 10; i++){
-	// 	if(ret.route[i][0] == 0) continue;
-	// 	printf("\nTrain %d:\n", i);
-	// 	// printf("j: %d", j);
-	
-	// 	for(int j = 0; j < 26; j++){
-	// 		//printf("i: %d, j: %d\n", i, j);
-	// 		if(ret.route[i][j] != 0)
-	// 			printf("Sctn: %c, \n", ret.route[i][j]);
-			
-	// 	} 
+	for (int i = 0, count = 0; i < 9; i++){ //Check for consecutive in route
 		
-	// }
+		
+		if(ret.route[i][0] == 0 && count == ret.route_count){
+			break;
+		}
+		if(ret.route[i][0] == 0 && count != ret.route_count){ //sets an error if you see a zero before you expect
+			printf("Error: nonconsecutive train numbers\n");
+			ret.error ^= 16;
+			break;
+		}
+		
+		count++;
+	}
+	
+	for (int i = 0, count = 0; i < 26; i++){
+		
+		if(ret.sctn[i] == 0 && count == ret.sctn_count){
+			break;
+		}
+		if(ret.sctn[i] == 0 && count != ret.sctn_count){
+			printf("Error: nonconsecutive intersection letters\n");
+			ret.error ^= 32;
+			break;
+		}
+		count++;
+		
+		
+	}
+	
+	
+	
 	
 	return ret;
 }
@@ -204,11 +228,10 @@ Error Codes:
 		Catastrophic, failed to open trains.txt
 	bit 3: (error & 8) {complete}
 		Catastrophic, formatting issue with trains.txt
-	bit 4: (error & 16) 
-		*Catastrophic, illegal assignment with trains
-			*may be handled with ignoring illegal junction assignment
-	bit 5: 
-		Warning only, double assignment with intersections
+	bit 4: (error & 16) {complete}
+		Non-consecutive train numbers
+	bit 5:  (error & 32) {complete}
+		Non-consecutive intersection letters
 	bit 6: 
 		Warning only, double assignment with trains
 	bit ?: 

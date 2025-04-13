@@ -38,8 +38,7 @@ typedef struct {
 } shared_memory_t;
 
 typedef struct{
-    int route[10][26], sctn[26];
-    int error;
+	int route[9][26], route_count, sctn[26], sctn_count, error; 
 } Parse;
 
 #endif

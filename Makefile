@@ -19,7 +19,7 @@ message_test: src/message.o tests/message_test.o
 	@$(CC) -o output/message_test src/message.o tests/message_test.o
 	./output/message_test
 
-parse_test: src/parse.o tests/parse_test/parse_test.o
+parse_test: src/parse.o tests/parse_test.o
 	@mkdir -p output
-	@$(CC) -o output/parse_test src/parse.o tests/parse_test/parse_test.o
+	@$(CC) -o output/parse_test src/parse.o tests/parse_test.o
 	./output/parse_test
