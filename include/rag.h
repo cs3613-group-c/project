@@ -1,7 +1,9 @@
 // Author: Em Jordan
 #ifndef RAG_H
 #define RAG_H
+
 #include "constants.h"
+#include <stdbool.h>
 
 typedef struct {
   int id;
@@ -28,7 +30,19 @@ typedef struct {
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph); 
 
-// Adds a process to our current graph
-void add_process(resource_alloc_graph_t *graph);
+// Adds a process to our current graph.
+// This function will return 0 on success or a negative number on an error 
+int graph_add_process(resource_alloc_graph_t *graph, int process_id);
+
+// Adds a resource to our current graph
+// This function will return 0 on success or a negative number on an error 
+int graph_add_resource(resource_alloc_graph_t *graph, int resource_id);
+
+// Tries to allocate `count` of the given resource at to the given process
+// This function will return 0 on success or a negative number on an error 
+int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, int count);
+
+// Checks if the given RAG has a deadlock 
+bool graph_check_deadlock(resource_alloc_graph_t *graph);
 
 #endif
