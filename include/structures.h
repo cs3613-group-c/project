@@ -24,7 +24,7 @@ typedef union {
 typedef struct {
     char name[MAX_NAME_LENGTH];
     int capacity;
-    intersection_lock_type_t *lock_type;
+    intersection_lock_type_t lock_type;
     intersection_lock_t *lock_data;
     char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH];
     int num_holding_trains;

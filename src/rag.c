@@ -13,7 +13,7 @@ int graph_add_process(resource_alloc_graph_t *graph, int process_id) {
     if (graph->processes_len >= MAX_PROCESSES) {
         return -1; 
     }
-    // graph->processes[graph->processes_len] = process_id; 
+    // graph->processes[graph->processes_len] = {}; 
     return 0;
 }
 
