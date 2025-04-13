@@ -11,12 +11,21 @@
 #include <semaphore.h>
 #include "constants.h"
 
+typedef enum {
+    LOCK_MUTEX,
+    LOCK_SEMAPHORE,
+} intersection_lock_type_t;
+
+typedef union {
+    pthread_mutex_t *mutex;
+    sem_t *semaphore;
+} intersection_lock_t;
+
 typedef struct {
     char name[MAX_NAME_LENGTH];
-    int type;
     int capacity;
-    pthread_mutex_t* mutex;
-    sem_t* semaphore;
+    intersection_lock_type_t *lock_type;
+    intersection_lock_t *lock_data;
     char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH];
     int num_holding_trains;
 } intersection_t;

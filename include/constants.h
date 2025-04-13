@@ -9,13 +9,14 @@
 
 #define MAX_INTERSECTIONS 20
 #define MAX_TRAINS 20
+
 #define MAX_NAME_LENGTH 50
 #define MAX_ROUTE_LENGTH 20
+
 #define MAX_MESSAGE_SIZE 100
 #define MAX_LOG_SIZE 200
 
-// Intersection types
-#define MUTEX_TYPE 1
-#define SEMAPHORE_TYPE 2
+#define MAX_PROCESSES 10
+#define MAX_RESOURCES 10
 
 #endif
