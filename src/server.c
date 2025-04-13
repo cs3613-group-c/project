@@ -15,10 +15,11 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include "../include/ipc.h"
+#include "../include/structures.h"
 #include "../include/utils.h"
 
 extern int msgq_id;
-extern SharedMemory* shared_memory;
+extern shared_memory_t *shared_memory;
 
 void server_process() {
     /* TODO: Implement the main server process that handles train requests

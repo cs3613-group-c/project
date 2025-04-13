@@ -17,10 +17,11 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include "../include/structures.h"
+#include "../include/parse.h"
 #include "../include/ipc.h"
 
-SharedMemory* shared_memory;
-FILE* log_file;
+shared_memory_t *shared_memory;
+FILE *log_file;
 int msgq_id;
 int shm_id;
 
@@ -28,19 +29,16 @@ int main() {
     pid_t pid;
     key_t key = ftok(".", 'R'); // IPC Key
     msgq_id = msgget(key, IPC_CREAT | 0666); // Message queue ID
-    shm_id = shmget(key, sizeof(SharedMemory), IPC_CREAT | 0666); // Shared memory ID
-    shared_memory = (SharedMemory*)shmat(shm_id, NULL, 0); // Allocate shm
+    shm_id = shmget(key, sizeof(shared_memory_t), IPC_CREAT | 0666); // Shared memory ID
+    shared_memory = (shared_memory_t*)shmat(shm_id, NULL, 0); // Allocate shm
     log_file = fopen("simulation.log", "w"); // Open simulation.log file
 
     Parse input = fileparse("input/intersections.txt", "input/trains.txt"); //FIXME: Check that these directories work
-    if (input.error > 0){
-        
+    if (input.error > 0){        
         printf("Issue with config file\n");
-        
+        return 1;
     }
-    
-    
-    
+
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
         pid = fork();

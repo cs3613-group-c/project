@@ -10,11 +10,12 @@
 
 #include <unistd.h>
 #include <sys/msg.h>
+#include "../include/structures.h"
 
 extern int msgq_id;
-extern SharedMemory* shared_memory;
+extern shared_memory_t *shared_memory;
 
-void train_process(Train* train) {
+void train_process(train_t *train) {
     /* TODO: Implement the train process that navigates through intersections
      * 1. Process each intersection in the train's route sequentially
      * 2. For each intersection:

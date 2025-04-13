@@ -12,21 +12,26 @@
 #include "../include/parse.h"
 #include "../include/structures.h"
 
+// The name of the file to read intersections from
+#define INTERSECTION_FILE_NAME "Intersections.txt"
+// The max length of our strings to read from
+#define MAX_STR_LEN 256
+
  Parse fileparse(const char* intersections_file, const char* trains_file){	
 	int route[10][26] = {0};
 	// int sctn[26] = {0};
 	Parse ret = {{0},{0}, 0};
 	
 	//File Format: IntersectionName:Capacity
-	char intName[256] = "Intersections.txt";
+	char intName[MAX_STR_LEN] = INTERSECTION_FILE_NAME;
 	FILE *intersections = fopen(intersections_file, "r");
 	if (intersections == NULL) {
-        perror(strcat(intName, " not found"));
+		perror(strcat(intName, " not found"));
 		ret.error ^= 1;
-        return ret;
-    }
+		return ret;
+	}
 	
-	char line[256];
+	char line[MAX_STR_LEN];
 	int l = 0; //line number for indexing into our sctn array
 	
 	while (fgets(line, sizeof(line), intersections)) {
@@ -71,13 +76,13 @@
 	//Purpose: Define train names and their routes (ordered list of intersections).
 	//Format: TrainName:Intersection1,Intersection2,...
 	FILE *trains = fopen(trains_file, "r");
-	if (trains == NULL) {
-        perror("Error");
+		if (trains == NULL) {
+		perror("Error");
 		ret.error ^=4;
-        return ret;
-    }
-	char *tok;
-	
+		return ret;
+	}
+
+	char *tok;	
 	{ //scope here to isolate match1[]
 		char match1[] = "Train";
 		char match2[] = ":Intersection";

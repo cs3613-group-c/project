@@ -13,7 +13,7 @@
 void parse_config_files(const char* intersections_file, const char* trains_file);
 
 // Train process
-void train_process(Train* train);
+void train_process(train_t *train);
 
 // Server process
 void server_process();

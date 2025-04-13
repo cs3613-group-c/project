@@ -8,12 +8,11 @@
 *
 */
 #include <stdio.h>
-#include <string.h>
 #include <pthread.h>
 #include "../include/utils.h"
 
-extern SharedMemory* shared_memory;
-extern FILE* log_file;
+extern shared_memory_t *shared_memory;
+extern FILE *log_file;
 
 void format_sim_time(int sim_time, char* formatted_time) {
     int hours = sim_time / 3600;

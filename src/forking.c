@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include "forking.h"
+#include "../include/constants.h"
+#include "../include/structures.h"
 
 // These functions should be implemented elsewhere
-extern void simulate_train(const char *train_name, char route[][MAX_NAME_LEN], int route_len);
+extern void simulate_train(const char *train_name, char route[][MAX_NAME_LENGTH], int route_len);
 extern void run_server();  // Parent process becomes server after forking
 
-void fork_trains(Train *train_list, int train_count) {
+void fork_trains(train_t *train_list, int train_count) {
     pid_t pids[MAX_TRAINS];
 
     for (int i = 0; i < train_count; i++) {

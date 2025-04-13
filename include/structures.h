@@ -19,34 +19,27 @@ typedef struct {
     sem_t* semaphore;
     char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH];
     int num_holding_trains;
-} Intersection;
+} intersection_t;
 
 typedef struct {
     char name[MAX_NAME_LENGTH];
     char route[MAX_ROUTE_LENGTH][MAX_NAME_LENGTH];
-    int route_length;
+    int route_len;
     int current_position;
-} Train;
+} train_t;
 
 typedef struct {
-    long msg_type;
-    char train_name[MAX_NAME_LENGTH];
-    char intersection_name[MAX_NAME_LENGTH];
-    int request_type;
-} Message;
-
-typedef struct {
-    Intersection intersections[MAX_INTERSECTIONS];
+    intersection_t intersections[MAX_INTERSECTIONS];
     int num_intersections;
-    Train trains[MAX_TRAINS];
+    train_t trains[MAX_TRAINS];
     int num_trains;
     pthread_mutex_t time_mutex;
     int sim_time;
-} SharedMemory;
+} shared_memory_t;
 
 typedef struct{
-	int route[10][26], sctn[26];
-	int error;
+    int route[10][26], sctn[26];
+    int error;
 } Parse;
 
 #endif

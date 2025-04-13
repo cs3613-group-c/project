@@ -18,11 +18,4 @@
 #define MUTEX_TYPE 1
 #define SEMAPHORE_TYPE 2
 
-// Message types
-#define ACQUIRE_REQUEST 1
-#define RELEASE_REQUEST 2
-#define GRANT_RESPONSE 3
-#define WAIT_RESPONSE 4
-#define DENY_RESPONSE 5
-
 #endif
