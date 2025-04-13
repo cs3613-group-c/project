@@ -13,26 +13,30 @@ int graph_add_process(resource_alloc_graph_t *graph, int process_id) {
     if (graph->processes_len >= MAX_PROCESSES) {
         return -1; 
     }
-    // graph->processes[graph->processes_len] = {}; 
+    graph->processes[graph->processes_len] = (process_t){ .id = process_id }; 
+    graph->processes_len += 1;
     return 0;
 }
 
 // Adds a resource to our current graph
 // This function will return 0 on success or a negative number on an error 
 int graph_add_resource(resource_alloc_graph_t *graph, int resource_id) {
+    if (graph->resources_len >= MAX_RESOURCES) {
+        return -1; 
+    }
+    graph->resources[graph->resources_len] = (resource_t){ .id = resource_id }; 
+    graph->resources_len += 1;
     return 0;
 }
 
 // Tries to allocate `count` of the given resource at to the given process
 // This function will return 0 on success or a negative number on an error 
 int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, int count) {
-
     return 0;
 }
 
 // Tries to allocate `count` of the given resource at to the given process
 // This function will return 0 on success or a negative number on an error 
 bool graph_check_deadlock(resource_alloc_graph_t *graph) {
-
     return false;
 }
