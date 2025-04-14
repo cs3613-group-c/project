@@ -1,3 +1,20 @@
+/*
+* Group C
+*
+* Author: Drake Geeteh
+* Email: drake.geeteh@okstate.edu
+* Date: 4/4/2025
+* Description: Includes the following synchronization mechanisms which will be integrated in the system:
+*
+* init_intersection_sync: Initialize sync primitives for an intersection
+* cleanup_intersection_sync: Clean up sync primitives for an intersection
+* try_acquire_intersection: Try to acquire an intersection
+* release_intersection: Release an intersection
+* is_train_holding_intersection: Check if a train is holding an intersection
+* get_intersection_state: Get the current state of an intersection
+*
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +23,6 @@
 #include "../include/sync.h"
 #include "../include/utils.h"
 
-// Initialize synchronization primitives for an intersection
 void init_intersection_sync(intersection_t* intersection) {
     if (intersection->lock_type == LOCK_MUTEX) {
         intersection->lock_data = (intersection_lock_t*)malloc(sizeof(intersection_lock_t));
@@ -27,7 +43,6 @@ void init_intersection_sync(intersection_t* intersection) {
     }
 }
 
-// Clean up synchronization primitives for an intersection
 void cleanup_intersection_sync(intersection_t* intersection) {
     if (intersection->lock_type == LOCK_MUTEX) {
         pthread_mutex_destroy(intersection->lock_data->mutex);
@@ -42,7 +57,6 @@ void cleanup_intersection_sync(intersection_t* intersection) {
     }
 }
 
-// Try to acquire an intersection
 int try_acquire_intersection(intersection_t* intersection, const char* train_name) {
     if (intersection->lock_type == LOCK_MUTEX) {
         if (pthread_mutex_trylock(intersection->lock_data->mutex) == 0) {
@@ -64,7 +78,6 @@ int try_acquire_intersection(intersection_t* intersection, const char* train_nam
     }
 }
 
-// Release an intersection
 void release_intersection(intersection_t* intersection, const char* train_name) {
     // Remove train from holding list
     for (int i = 0; i < intersection->num_holding_trains; i++) {
@@ -86,7 +99,6 @@ void release_intersection(intersection_t* intersection, const char* train_name) 
     }
 }
 
-// Check if a train is holding an intersection
 int is_train_holding_intersection(intersection_t* intersection, const char* train_name) {
     for (int i = 0; i < intersection->num_holding_trains; i++) {
         if (strcmp(intersection->holding_trains[i], train_name) == 0) {
@@ -96,7 +108,6 @@ int is_train_holding_intersection(intersection_t* intersection, const char* trai
     return 0;
 }
 
-// Get the current state of an intersection
 void get_intersection_state(intersection_t* intersection, char* state_str) {
     if (intersection->lock_type == LOCK_MUTEX) {
         sprintf(state_str, "Mutex intersection %s: %s", 
