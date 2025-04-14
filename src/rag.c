@@ -49,9 +49,6 @@ int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, 
     return 0;
 }
 
-// Checks the graph for a deadlock, will return 1 if it finds one, or a 0 if it does not
-// In order for a deadlock to be guarenteed, it there must be a cycle where each resource of that cycle is a mutex
-	// - This is technically more than specifications, which just ask for detecting cycles, so I might change this in the future
 bool graph_check_deadlock(resource_alloc_graph_t *graph) 
 {
 	int visited[MAX_PROCESSES];
@@ -66,7 +63,7 @@ bool graph_check_deadlock(resource_alloc_graph_t *graph)
 	return false;
 }
 
-bool graph_detect_cycle(resource_alloc_graph_t *graph, int *visited, int visited_len, int *recursed, int recursed_len, int process_id) {
+bool graph_detect_cycle(resource_alloc_graph_t *graph, int visited[MAX_PROCESSES], int visited_len, int recursed[MAX_PROCESSES], int recursed_len, int process_id) {
 	if(visited[process_id]) { }
 	if(recursed[process_id]) { }
 
