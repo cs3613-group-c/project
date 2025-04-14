@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "../src/rag.c"
+// #include "../src/rag.c"
 
 
 #define PROCESS_COUNT 5
