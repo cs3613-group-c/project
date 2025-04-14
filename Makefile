@@ -21,7 +21,7 @@ message_test: src/message.o tests/message_test.o
 
 deadlock_test: src/rag.o tests/deadlock_test.o 
 	@mkdir -p output/
-	@$(CC) -o output/deadlock_test src/deadlock.o tests/deadlock_test.o
+	@$(CC) -o output/deadlock_test src/rag.o tests/deadlock_test.o
 	./output/deadlock_test
 
 
