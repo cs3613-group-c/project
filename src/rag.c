@@ -34,7 +34,7 @@ int graph_add_resource(resource_alloc_graph_t *graph, int resource_id, int max_c
 int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, int count) 
 {
 	resource_t *resource = &graph->resources[resource_id];
-	process_t *process = &graph->processes[proccess_id];
+	process_t *process = &graph->processes[process_id];
 	
 	if(resource->current_count + count <= resource->max_count)
 	{
@@ -54,36 +54,35 @@ int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, 
 	// - This is technically more than specifications, which just ask for detecting cycles, so I might change this in the future
 bool graph_check_deadlock(resource_alloc_graph_t *graph) 
 {
-	int visited[graph->processes_len];
-	int recursed[graph->processes_len];
+	int visited[MAX_PROCESSES];
+	int recursed[MAX_PROCESSES];
 	
-	//go through every unvisited node and check for cycles
-	for(int i = 0; i < graph->processes_len; i++)
-	{
-		if(!visited[i] && detectCycle(resource_alloc_graph_t *graph, *visited, *recursed, i))
-			return true; //cycle found
-	}
-    return false;
-}
-
-bool detectCycle(resource_alloc_graph_t *graph, int[] visited, int[] recursed, int process)
-{
-	if(visited[process])
-		
-	if(recursed[process])
-		
-	visited[process] = true;
-	recursed[process] = true;
-	
-	for(int i = 0; i < graph->resources_len;i++) //for each resource in the process
-	{
-		if(resources[i] > 0) //if the process is utilizing the resource
-		{
-			if(detectCycle(resource_alloc_graph_t *graph, int[] visited, int[] recursed, int i))
-				return true;
+	// Go through every unvisited node and check for cycles
+	for(int i = 0; i < graph->processes_len; i++) {
+		if(!visited[i] && graph_detect_cycle(graph, visited, graph->processes_len, recursed, graph->processes_len, i)) {
+			return true;
 		}
 	}
+	return false;
+}
+
+bool graph_detect_cycle(resource_alloc_graph_t *graph, int *visited, int visited_len, int *recursed, int recursed_len, int process_id) {
+	if(visited[process_id]) { }
+	if(recursed[process_id]) { }
+
+	visited[process_id] = true;
+	recursed[process_id] = true;
 	
-	recursed[process] = false;
+	// Check each resource
+	for(int i = 0; i < graph->resources_len;i++) {
+		// If the current resource has *any* allocations by the given process (e.g., utilizing the resource), check for another cycle
+		if(graph->resources[i].current_allocs[process_id] > 0) //if the process is utilizing the resource
+		{
+			if(graph_detect_cycle(graph, visited, visited_len, recursed, recursed_len, process_id)) {
+				return true;
+			}
+		}
+	}	
+	recursed[process_id] = false;
 	return false;
 }

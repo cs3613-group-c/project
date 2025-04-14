@@ -10,16 +10,11 @@ typedef struct {
   int id;
   // The current allocations of this resource by a given resource
   // e.g., if process 0 had 4 instances of this resource, it would look like: current_allocs[0] = 4;
-  int current_allocs[MAX_PROCESSES];
-  
+  int current_allocs[MAX_PROCESSES]; 
   //The current amount of resources allocated
   int current_count;
-  
-  int current_count;
   // The max number of allocations that this resource can give out
-  int max_count;
-  
-  
+  int max_count; 
 } resource_t;
 
 typedef struct {
@@ -56,7 +51,12 @@ int graph_add_resource(resource_alloc_graph_t *graph, int resource_id, int max_c
 // This function will return 0 on success or a negative number on an error 
 int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, int count);
 
-// Checks if the given RAG has a deadlock 
+// Checks the graph for a deadlock, will return 1 if it finds one, or a 0 if it does not
+// In order for a deadlock to be guarenteed, it there must be a cycle where each resource of that cycle is a mutex
+// NOTE(Cade): This is technically more than specifications, which just ask for detecting cycles, so I might change this in the future
 bool graph_check_deadlock(resource_alloc_graph_t *graph);
+
+// Checks if there is a circular reference in our graph
+bool graph_detect_cycle(resource_alloc_graph_t *graph, int* visited, int visited_len, int* recursed, int recursed_len, int process_id);
 
 #endif
