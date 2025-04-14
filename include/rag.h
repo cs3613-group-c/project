@@ -6,13 +6,20 @@
 #include <stdbool.h>
 
 typedef struct {
+  // The ID of the resource
   int id;
+  // The current allocations of this resource by a given resource
+  // e.g., if process 0 had 4 instances of this resource, it would look like: current_allocs[0] = 4;
   int current_allocs[MAX_PROCESSES];
-  int max_allocs[MAX_PROCESSES];
+  // The max number of allocations that this resource can give out
+  int max_count;
 } resource_t;
 
 typedef struct {
+  // The ID of the process
   int id;
+  // A mapping of resource_id -> resources requested
+  // e.g., this process is requesting 2 instances from resource 4 would be: request_list[4] = 2;
   int request_list[MAX_RESOURCES];
 } process_t;
 
