@@ -11,8 +11,15 @@ typedef struct {
   // The current allocations of this resource by a given resource
   // e.g., if process 0 had 4 instances of this resource, it would look like: current_allocs[0] = 4;
   int current_allocs[MAX_PROCESSES];
+  
+  //The current amount of resources allocated
+  int current_count;
+  
+  int current_count;
   // The max number of allocations that this resource can give out
   int max_count;
+  
+  
 } resource_t;
 
 typedef struct {
