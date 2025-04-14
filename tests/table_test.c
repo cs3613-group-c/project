@@ -4,7 +4,6 @@
 //  Date: 4/6/2025
 
 #include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
@@ -13,13 +12,9 @@
 #include <unistd.h>
 #include "../include/structures.h"
 #include "../include/parse.h"
-
 #include "../include/table.h"
-#include "../include/ipc.h"
 #include <sys/mman.h>
 #include <sys/types.h>
-
-
 
 shared_memory_t *shared_memory;
 

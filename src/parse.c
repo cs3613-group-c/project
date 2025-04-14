@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "../include/parse.h"
 #include "../include/structures.h"
 
 // The name of the file to read intersections from
