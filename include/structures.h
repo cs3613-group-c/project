@@ -38,7 +38,7 @@ typedef struct {
 } train_t;
 
 typedef struct{
-	int route[9][26], route_count, sctn[26], sctn_count, error; 
+    int route[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count, sctn[MAX_ROUTE_LENGTH], sctn_count, error; 
 } Parse;
 
 typedef struct {
@@ -50,9 +50,5 @@ typedef struct {
     int sim_time;
     Parse input; //FIXME: temporary data structure until we can properly load from parser into other structs
 } shared_memory_t;
-
-typedef struct{
-    int route[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count, sctn[MAX_ROUTE_LENGTH], sctn_count, error; 
-} Parse;
 
 #endif
