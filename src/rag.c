@@ -64,19 +64,26 @@ bool graph_check_deadlock(resource_alloc_graph_t *graph)
 }
 
 bool graph_detect_cycle(resource_alloc_graph_t *graph, int visited[MAX_PROCESSES], int visited_len, int recursed[MAX_PROCESSES], int recursed_len, int process_id) {
-	if(visited[process_id]) { }
-	if(recursed[process_id]) { }
+	if(recursed[process_id]) { 
+		return true; //If this branch has an ancestor that is the same node, there is a cycle. Return true
+	}
+	if(visited[process_id]) {
+		return false; //if its already been visited, but not an ancestor, then we've already visited and just skip it and return false
+		}
 
 	visited[process_id] = true;
 	recursed[process_id] = true;
 	
-	// Check each resource
+	// Check each resource to see if it is being requested by the process
 	for(int i = 0; i < graph->resources_len;i++) {
-		// If the current resource has *any* allocations by the given process (e.g., utilizing the resource), check for another cycle
-		if(graph->resources[i].current_allocs[process_id] > 0) //if the process is utilizing the resource
+		if(graph->processes[process_id].request_list[i] > 0) //if the process is requesting the resource, check all processes this resource is giving allocated in. These are the connections for our graph.
 		{
-			if(graph_detect_cycle(graph, visited, visited_len, recursed, recursed_len, process_id)) {
-				return true;
+			for(int j = 0; i < graph->resources_len; j++)
+			{
+				if(graph->resources[i].current_allocs[j] > 0) //if the resource is allocating some of itself to another process, check the process recursively. until a cycle is either found or not
+					if(graph_detect_cycle(graph, visited, visited_len, recursed, recursed_len, process_id)) { 
+						return true; // for each 
+				}
 			}
 		}
 	}	
