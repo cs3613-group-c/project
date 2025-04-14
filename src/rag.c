@@ -20,11 +20,11 @@ int graph_add_process(resource_alloc_graph_t *graph, int process_id) {
 
 // Adds a resource to our current graph
 // This function will return 0 on success or a negative number on an error 
-int graph_add_resource(resource_alloc_graph_t *graph, int resource_id) {
+int graph_add_resource(resource_alloc_graph_t *graph, int resource_id, int max_count) {
     if (graph->resources_len >= MAX_RESOURCES) {
         return -1; 
     }
-    graph->resources[graph->resources_len] = (resource_t){ .id = resource_id }; 
+    graph->resources[graph->resources_len] = (resource_t){ .id = resource_id, .max_count = max_count }; 
     graph->resources_len += 1;
     return 0;
 }

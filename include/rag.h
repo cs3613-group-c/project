@@ -43,7 +43,7 @@ int graph_add_process(resource_alloc_graph_t *graph, int process_id);
 
 // Adds a resource to our current graph
 // This function will return 0 on success or a negative number on an error 
-int graph_add_resource(resource_alloc_graph_t *graph, int resource_id);
+int graph_add_resource(resource_alloc_graph_t *graph, int resource_id, int max_count);
 
 // Tries to allocate `count` of the given resource at to the given process
 // This function will return 0 on success or a negative number on an error 
