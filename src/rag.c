@@ -69,8 +69,8 @@ bool graph_detect_cycle(resource_alloc_graph_t *graph, int visited[MAX_PROCESSES
 		return true; //If this branch has an ancestor that is the same node, there is a cycle. Return true
 	}
 	if(visited[process_id]) {
-		return false; //if its already been visited, but not an ancestor, then we've already visited and just skip it and return false
-		}
+		return false; // If its already been visited, but not an ancestor, then we've already visited and just skip it and return false
+	}
 
 	visited[process_id] = true;
 	recursed[process_id] = true;
