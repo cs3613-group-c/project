@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "../src/rag.c"
+
+
 #define PROCESS_COUNT 5
 
 #define RESOURCE_COUNT 5
-#define MAX_RESOURCE_ALLOCS 1
+#define MAX_RESOURCE_ALLOCS 3
 
 int main() {
   // Create an example graph
@@ -28,8 +31,23 @@ int main() {
     }
   }
   
-  // TODO: Setup resource state
-
+  /* TODO: Setup resource state
+	int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id, int count)
+	for(int i = 0; i < RESOURCE_COUNT; i++)
+	{
+		if(graph_alloc(&graph, i, 1, 1) != 0)
+		printf("failed to alloc resources to graph");
+	}*/
+	
+	if(graph_alloc(&graph, 0, 1, 1) != 0)
+		printf("failed to alloc resources to graph");
+	
+	if(graph_alloc(&graph, 1, 1, 1) != 0)
+		printf("failed to alloc resources to graph");
+	
+	if(graph_alloc(&graph, 1, 1, 1) != 0)
+		printf("failed to alloc resources to graph");
+	
   // Check for deadlock
   bool has_deadlock = graph_check_deadlock(&graph);
 
