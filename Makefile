@@ -29,3 +29,8 @@ parse_test: src/parse.o tests/parse_test.o
 	@mkdir -p output
 	@$(CC) -o output/parse_test src/parse.o tests/parse_test.o
 	./output/parse_test
+
+table_test: src/table.o src/parse.o tests/table_test.o
+	@mkdir -p output
+	@$(CC) -o output/table_test src/table.o tests/table_test.o src/parse.o
+	./output/table_test

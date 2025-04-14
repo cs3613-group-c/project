@@ -19,6 +19,7 @@
 #include "../include/structures.h"
 #include "../include/parse.h"
 #include "../include/ipc.h"
+#include "../include/table.h"
 
 shared_memory_t *shared_memory;
 FILE *log_file;
