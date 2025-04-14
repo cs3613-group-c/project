@@ -1,3 +1,4 @@
+// Authors: Cade Blakeman & Em Jordan
 #include <stdbool.h>
 #include "../include/rag.h"
 
