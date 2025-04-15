@@ -22,16 +22,11 @@ int table_init(shared_memory_t *mem, Parse input) {
 	return 0;
 }
 
-void table_print(){
-		char lock[] = "locked";
-		
-		printf("Intersection: ID | Capacity | Lock State | Holding Trains\n");
-		
-		for(int i = 0; i < parse.sctn_count; i++){
-			// printf("\n", parse.route_count);
-			printf("Intersection: %c |    %d     | %s | Holding Trains\n", (i +'A'), parse.sctn[i], lock);
-		}
-		
-		
-	
+void table_print() {
+	char lock[] = "locked";
+	printf("Intersection: ID | Capacity | Lock State | Holding Trains\n");
+	for(int i = 0; i < parse.sctn_count; i++){
+		// printf("\n", parse.route_count);
+		printf("Intersection: %c |    %d     | %s | Holding Trains\n", (i +'A'), parse.sctn[i], lock);
+	}
 }

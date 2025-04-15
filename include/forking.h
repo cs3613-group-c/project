@@ -1,4 +1,4 @@
-//Author: Erin Dunlap
+// Author: Erin Dunlap
 #ifndef FORKING_H
 #define FORKING_H
 #include "structures.h"

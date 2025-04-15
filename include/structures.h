@@ -1,15 +1,15 @@
 /*
-* Group C
-*
-* Set of structs in the system. Add as needed.
-*
-*/
+ * Group C
+ *
+ * Set of structs in the system. Add as needed.
+ *
+ */
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
+#include "constants.h"
 #include <pthread.h>
 #include <semaphore.h>
-#include "constants.h"
 
 typedef enum {
     LOCK_MUTEX,
@@ -37,8 +37,9 @@ typedef struct {
     int current_position;
 } train_t;
 
-typedef struct{
-    int route[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count, sctn[MAX_ROUTE_LENGTH], sctn_count, error; 
+typedef struct {
+    int route[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count,
+        sctn[MAX_ROUTE_LENGTH], sctn_count, error;
 } Parse;
 
 typedef struct {
@@ -48,7 +49,8 @@ typedef struct {
     int num_trains;
     pthread_mutex_t time_mutex;
     int sim_time;
-    Parse input; //FIXME: temporary data structure until we can properly load from parser into other structs
+    Parse input; // FIXME: temporary data structure until we can properly load
+                 // from parser into other structs
 } shared_memory_t;
 
 #endif

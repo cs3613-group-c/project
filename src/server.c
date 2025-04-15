@@ -1,22 +1,22 @@
 /*
-* Group C
-*
-* Author:
-* Email:
-* Date:
-* Description:
-*
-*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/msg.h>
-#include <semaphore.h>
-#include <pthread.h>
+ * Group C
+ *
+ * Author:
+ * Email:
+ * Date:
+ * Description:
+ *
+ */
 #include "../include/ipc.h"
 #include "../include/structures.h"
 #include "../include/utils.h"
+#include <errno.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/msg.h>
 
 extern int msgq_id;
 extern shared_memory_t *shared_memory;
@@ -28,24 +28,23 @@ void server_process() {
      * 3. Handle two types of messages:
      *    a) ACQUIRE_REQUEST: When a train wants to enter an intersection
      *    b) RELEASE_REQUEST: When a train wants to leave an intersection
-     * 
+     *
      * For ACQUIRE_REQUEST:
      * - Check if the intersection is available (mutex or semaphore)
      * - If available, grant access and send GRANT_RESPONSE
      * - If not available, add to wait queue and check for deadlocks
-     * 
+     *
      * For RELEASE_REQUEST:
      * - Remove train from the intersection's holding list
      * - Release the resource (mutex or semaphore)
      * - Check if the train has completed its route
-     * 
+     *
      * Use the Message struct for communication:
      * - msg_type: ACQUIRE_REQUEST or RELEASE_REQUEST
      * - train_name: Name of the requesting train
      * - intersection_name: Name of the intersection
      */
 }
-
 
 int detect_deadlock() {
     /* TODO: Implement deadlock detection
