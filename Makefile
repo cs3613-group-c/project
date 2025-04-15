@@ -24,11 +24,16 @@ deadlock_test: src/rag.o tests/deadlock_test.o
 	@$(CC) -o output/deadlock_test src/rag.o tests/deadlock_test.o
 	./output/deadlock_test
 
-
 parse_test: src/parse.o tests/parse_test.o
 	@mkdir -p output
 	@$(CC) -o output/parse_test src/parse.o tests/parse_test.o
 	./output/parse_test
+
+logger_test: src/logger.o tests/logger_test.o
+	@mkdir -p output
+	@$(CC) -o output/logger_test src/logger.o tests/logger_test.o
+	./output/logger_test
+
 
 table_test: src/table.o src/parse.o tests/table_test.o
 	@mkdir -p output
