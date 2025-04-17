@@ -24,8 +24,8 @@ int main() {
 
         for (int j = 0; j < 26; j++) {
             // printf("i: %d, j: %d\n", i, j);
-            if (ret.route[i][j] != 0)
-                printf("Sctn: %c, ", ret.route[i][j]);
+            if (ret.routes[i][j] != 0)
+                printf("Sctn: %c, ", ret.routes[i][j]);
         }
         printf("\n");
     }

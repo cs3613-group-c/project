@@ -43,7 +43,7 @@ typedef struct {
 } train_t;
 
 typedef struct {
-    int route[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count,
+    int routes[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count,
         sctn[MAX_ROUTE_LENGTH], sctn_count, error;
 } parse_t;
 

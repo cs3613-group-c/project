@@ -154,7 +154,7 @@ parse_t parse_file(const char *intersections_file, const char *trains_file) {
                     j = 0;
                     // printf("\nTrain: %d\nFirst junct: %d\n",train, line[i] -
                     // 'A');
-                    ret.route[train - 1][stop] = line[i];
+                    ret.routes[train - 1][stop] = line[i];
                     stop++;
                     continue; // skip iterating j
                 }
@@ -177,7 +177,7 @@ parse_t parse_file(const char *intersections_file, const char *trains_file) {
 
                 if (match3[j] != line[i]) {
                     // printf("\nTrain: %djunct: %d\n",train, line[i] - 'A');
-                    ret.route[train - 1][stop] = line[i];
+                    ret.routes[train - 1][stop] = line[i];
                     stop++;
                     j = 0;
                     continue;
@@ -192,10 +192,10 @@ parse_t parse_file(const char *intersections_file, const char *trains_file) {
 
     for (int i = 0, count = 0; i < 9; i++) { // Check for consecutive in route
 
-        if (ret.route[i][0] == 0 && count == ret.route_count) {
+        if (ret.routes[i][0] == 0 && count == ret.route_count) {
             break;
         }
-        if (ret.route[i][0] == 0 &&
+        if (ret.routes[i][0] == 0 &&
             count != ret.route_count) { // sets an error if you see a zero
                                         // before you expect
             printf("Error: nonconsecutive train numbers\n");
