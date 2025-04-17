@@ -44,7 +44,7 @@ typedef struct {
 typedef struct {
     int route[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count,
         sctn[MAX_ROUTE_LENGTH], sctn_count, error;
-} Parse;
+} parse_t;
 
 typedef struct {
     intersection_t intersections[MAX_INTERSECTIONS];
@@ -53,7 +53,7 @@ typedef struct {
     int num_trains;
     pthread_mutex_t time_mutex;
     int sim_time;
-    Parse input; // FIXME: temporary data structure until we can properly load
+    parse_t input; // FIXME: temporary data structure until we can properly load
                  // from parser into other structs
 } shared_memory_t;
 

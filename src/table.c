@@ -12,7 +12,7 @@
 shared_memory_t *mem;
 
 
-int table_init(shared_memory_t *m, Parse parse) { 	
+int table_init(shared_memory_t *m, parse_t parse) { 	
 
 	mem = m;
 	(*mem).num_intersections = parse.sctn_count;
@@ -23,7 +23,7 @@ int table_init(shared_memory_t *m, Parse parse) {
 		(*mem).intersections[i].capacity = parse.sctn[i];
 		(*mem).intersections[i].num_holding_trains = 0;
 		
-		for(int j = 0; j < MAX_TRAINS; j++){
+		for(int j = 0; j < MAX_TRAINS; j++){ //Train holding initializer
 			
 			(*mem).intersections[i].holding_trains[j] = false;
 			
@@ -35,12 +35,7 @@ int table_init(shared_memory_t *m, Parse parse) {
 }
 
 bool table_is_sctn_locked(int i){ //return 1 if locked and 0 otherwise
-
-	if((*mem).intersections[i].num_holding_trains < (*mem).intersections[i].capacity)
-		return 0; //not locked
-	else
-		return 1; //locked
-		
+	return((*mem).intersections[i].num_holding_trains > (*mem).intersections[i].capacity);
 }
 
 void table_sctn_add_train(int sctn, int train){

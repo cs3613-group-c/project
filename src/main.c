@@ -35,7 +35,7 @@ int main() {
     shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
     log_file = fopen("simulation.log", "w"); // Open simulation.log file
 
-    Parse input = fileparse(
+    parse_t input = fileparse(
         "input/intersections.txt",
         "input/trains.txt"); // FIXME: Check that these directories work
     if (input.error > 0) {
