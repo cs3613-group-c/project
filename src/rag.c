@@ -39,13 +39,15 @@ int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id,
     resource_t *resource = &graph->resources[resource_id];
     process_t *process = &graph->processes[process_id];
 
-    if (resource->current_count + count <= resource->max_count) {
-        resource->current_count += count;
-        resource->current_allocs[process_id] += count;
-        process->request_list[resource_id] += count;
-    } else {
+    // If the request + our current count exceeds our max count, return err
+    if (resource->current_count + count > resource->max_count) {
         return -1;
     }
+
+    resource->current_count += count;
+    resource->current_allocs[process_id] += count;
+    // TODO: Should the request list hold what the current process *holds*?
+    process->request_list[resource_id] += count;
     return 0;
 }
 
