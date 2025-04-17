@@ -9,10 +9,8 @@
  *
  */
 
-#include "ipc.h"
 #include "parse.h"
 #include "structures.h"
-#include "table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ipc.h>
@@ -26,6 +24,10 @@ FILE *log_file;
 int msgq_id;
 int shm_id;
 
+void train_process(train_t *train) {}
+
+void server_process() {}
+
 int main() {
     pid_t pid;
     key_t key = ftok(".", 'R');              // IPC Key
@@ -35,7 +37,7 @@ int main() {
     shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
     log_file = fopen("simulation.log", "w"); // Open simulation.log file
 
-    parse_t input = fileparse(
+    parse_t input = parse_file(
         "input/intersections.txt",
         "input/trains.txt"); // FIXME: Check that these directories work
     if (input.error > 0) {

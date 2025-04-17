@@ -2,6 +2,6 @@
 #define PARSE_H
 #include "structures.h"
 
-Parse fileparse(const char *intersections_file, const char *trains_file);
+parse_t parse_file(const char *intersections_file, const char *trains_file);
 
 #endif

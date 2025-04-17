@@ -17,11 +17,11 @@
 // The max length of our strings to read from
 #define MAX_STR_LEN 256
 
-Parse fileparse(const char *intersections_file, const char *trains_file) {
+parse_t parse_file(const char *intersections_file, const char *trains_file) {
     //
     // Initialize each field in the struct
     // route[10][26], route_count, sctn[26], sctn_count, error}
-    Parse ret = {{0}, 0, {0}, 0, 0};
+    parse_t ret = {{0}, 0, {0}, 0, 0};
 
     // File Format{
     //				IntersectionName:Capacity
