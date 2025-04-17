@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 int main() {
-    Parse ret = fileparse("input/intersections.txt", "input/trains.txt");
+    parse_t ret = parse_file("input/intersections.txt", "input/trains.txt");
 
     if (ret.error > 0)
         printf("parse completed with errors\n\n");

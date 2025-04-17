@@ -24,7 +24,7 @@ int main(){
 	// Modify things
  	m->num_trains = 2;
 		
-	Parse input = fileparse("input/intersections.txt", "input/trains.txt");
+	parse_t input = parse_file("input/intersections.txt", "input/trains.txt");
 	if(input.error > 0) printf("parse completed with errors\n\n");
 	else printf("parse completed without errors\n\n");
 	
