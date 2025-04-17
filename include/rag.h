@@ -55,15 +55,38 @@ int graph_add_resource(resource_alloc_graph_t *graph, int resource_id,
 int graph_alloc(resource_alloc_graph_t *graph, int process_id, int resource_id,
                 int count);
 
+//creates an assignment edge in the graph
+//returns a 0 on success or a negative number on an error
+int graph_assign_edge(resource_alloc_graph_t *graph, int process_id, int resource_id,
+                int count);
+
+//creates a request edge in the graph
+//returns a 0 on success or a negative number on an error
+int graph_request_edge(resource_alloc_graph_t *graph, int process_id, int resource_id,
+                int count);
+
+//removes an assignment edge in the graph
+//returns a 0 on success or a negative number on an error
+int graph_remove_assignment(resource_alloc_graph_t *graph, int process_id, int resource_id,
+                int count);
+
+//removes a request edge in the graph
+//returns a 0 on success or a negative number on an error
+int graph_remove_request(resource_alloc_graph_t *graph, int process_id, int resource_id,
+                int count);
+
+//prints the graph, mostly for bug fixing
+void print_graph(resource_alloc_graph_t *graph);
+
 // Checks the graph for a deadlock, will return 1 if it finds one, or a 0 if it
 // does not In order for a deadlock to be guarenteed, it there must be a cycle
 // where each resource of that cycle is a mutex NOTE(Cade): This is technically
 // more than specifications, which just ask for detecting cycles, so I might
 // change this in the future
-bool graph_check_deadlock(resource_alloc_graph_t *graph);
+int graph_check_deadlock(resource_alloc_graph_t *graph);
 
 // Checks if there is a circular reference in our graph
-bool graph_detect_cycle(resource_alloc_graph_t *graph, int *visited,
+int graph_detect_cycle(resource_alloc_graph_t *graph, int *visited,
                         int visited_len, int *recursed, int recursed_len,
                         int process_id);
 
