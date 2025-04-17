@@ -1,7 +1,7 @@
 // logger.c
 // Author: Erin Dunlap
 
-#include "../include/logger.h"
+#include "logger.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,10 +25,11 @@ void init_logger(const char *filename) {
 
 // Closes the log file when logging is done
 void close_logger() {
-    if (log_file) {
-        fclose(log_file);
-        log_file = NULL;
-    }
+    // Return early if we don't have a log file
+    if (!log_file)
+        return;
+    fclose(log_file);
+    log_file = NULL;
 }
 
 // Add time to our fake stopwatch

@@ -1,0 +1,145 @@
+[
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/forking.o",
+      "src/forking.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/forking.c",
+    "output": "/home/em/projects/cs3613-project/src/forking.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/logger.o",
+      "src/logger.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/logger.c",
+    "output": "/home/em/projects/cs3613-project/src/logger.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/main.c",
+    "output": "/home/em/projects/cs3613-project/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/message.o",
+      "src/message.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/message.c",
+    "output": "/home/em/projects/cs3613-project/src/message.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/parse.o",
+      "src/parse.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/parse.c",
+    "output": "/home/em/projects/cs3613-project/src/parse.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/rag.o",
+      "src/rag.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/rag.c",
+    "output": "/home/em/projects/cs3613-project/src/rag.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/server.o",
+      "src/server.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/server.c",
+    "output": "/home/em/projects/cs3613-project/src/server.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/sync.o",
+      "src/sync.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/sync.c",
+    "output": "/home/em/projects/cs3613-project/src/sync.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/table.o",
+      "src/table.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/table.c",
+    "output": "/home/em/projects/cs3613-project/src/table.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/train.o",
+      "src/train.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/train.c",
+    "output": "/home/em/projects/cs3613-project/src/train.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/utils.o",
+      "src/utils.c"
+    ],
+    "directory": "/home/em/projects/cs3613-project",
+    "file": "/home/em/projects/cs3613-project/src/utils.c",
+    "output": "/home/em/projects/cs3613-project/src/utils.o"
+  }
+]

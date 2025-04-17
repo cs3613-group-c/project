@@ -1,4 +1,4 @@
-#include "../include/rag.h"
+#include "rag.h"
 #include <stdbool.h>
 #include <stdio.h>
 

@@ -1,8 +1,8 @@
-#include "../include/parse.h"
-#include "../include/structures.h"
+#include "parse.h"
+#include "structures.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
+
 int main() {
     Parse ret = fileparse("input/intersections.txt", "input/trains.txt");
 

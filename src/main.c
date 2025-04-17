@@ -9,10 +9,10 @@
  *
  */
 
-#include "../include/ipc.h"
-#include "../include/parse.h"
-#include "../include/structures.h"
-#include "../include/table.h"
+#include "ipc.h"
+#include "parse.h"
+#include "structures.h"
+#include "table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ipc.h>

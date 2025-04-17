@@ -1,5 +1,5 @@
 // Authors: Cade Blakeman & Em Jordan
-#include "../include/rag.h"
+#include "rag.h"
 #include <stdbool.h>
 
 // Initializes the data in our graph to default values

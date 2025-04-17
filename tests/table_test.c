@@ -3,9 +3,9 @@
 //  Email: gabriel.j.cornelius@okstate.edu
 //  Date: 4/6/2025
 
-#include "../include/parse.h"
-#include "../include/structures.h"
-#include "../include/table.h"
+#include "parse.h"
+#include "structures.h"
+#include "table.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <sys/ipc.h>

@@ -8,7 +8,7 @@
  *
  */
 
-#include "../include/structures.h"
+#include "structures.h"
 #include <sys/msg.h>
 #include <unistd.h>
 

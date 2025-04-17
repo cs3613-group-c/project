@@ -7,7 +7,7 @@
  * Description:
  *
  */
-#include "../include/utils.h"
+#include "utils.h"
 #include <pthread.h>
 #include <stdio.h>
 

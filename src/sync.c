@@ -16,8 +16,7 @@
  *
  */
 
-#include "../include/sync.h"
-#include "../include/utils.h"
+#include "sync.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>

@@ -5,7 +5,7 @@
 //
 // TODO: I'll need to read the project document more just to make sure I have
 // the specifications right!
-#include "../include/message.h"
+#include "message.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>

@@ -7,7 +7,7 @@
 //  the calling function.
 // 	Additionally, passes an error code indicating which errors have occured
 
-#include "../include/structures.h"
+#include "structures.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>

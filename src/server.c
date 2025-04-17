@@ -7,15 +7,10 @@
  * Description:
  *
  */
-#include "../include/ipc.h"
-#include "../include/structures.h"
-#include "../include/utils.h"
-#include <errno.h>
+#include "ipc.h"
+#include "structures.h"
 #include <pthread.h>
 #include <semaphore.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/msg.h>
 
 extern int msgq_id;

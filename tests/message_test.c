@@ -1,4 +1,4 @@
-#include "../include/message.h"
+#include "message.h"
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
