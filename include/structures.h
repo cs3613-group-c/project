@@ -28,7 +28,8 @@ typedef struct {
     int capacity;
     intersection_lock_type_t lock_type;
     intersection_lock_t *lock_data;
-    bool holding_trains[MAX_TRAINS]; //Boolean initialized to zero, to index trains and indicate if they are held
+    char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH];
+    bool table_holding_trains[MAX_TRAINS]; //Boolean initialized to zero, to index trains and indicate if they are held
     int num_holding_trains;
 } intersection_t;
 
