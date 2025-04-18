@@ -46,6 +46,7 @@ void table_sctn_add_train(int sctn, int train) {
 
         (*mem).intersections[sctn].num_holding_trains++;
         (*mem).intersections[sctn].table_holding_trains[train] = true;
+        
     }
 }
 

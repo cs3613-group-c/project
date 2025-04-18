@@ -14,6 +14,6 @@
 
 #include "structures.h"
 
-parse_t parse_file(const char *intersections_file, const char *trains_file);
+parse_t parse_file(const char *intersections_file, const char *trains_file, shared_memory_t *mem);
 
 #endif

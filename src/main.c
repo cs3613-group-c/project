@@ -126,7 +126,8 @@ int main() {
 
     parse_t input = parse_file(
         "input/intersections.txt",
-        "input/trains.txt"); // FIXME: Check that these directories work
+        "input/trains.txt",
+        shared_memory); // FIXME: Check that these directories work
     if (input.error > 0) {
         printf("Issue with config file\n");
         return 1;

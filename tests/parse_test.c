@@ -2,9 +2,19 @@
 #include "structures.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/mman.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
+shared_memory_t *m;
 int main() {
-    parse_t ret = parse_file("input/intersections.txt", "input/trains.txt");
+    m = mmap(NULL, sizeof(shared_memory_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    parse_t ret = parse_file("input/intersections.txt", "input/trains.txt", m);
 
     if (ret.error > 0)
         printf("parse completed with errors\n\n");
@@ -34,4 +44,9 @@ int main() {
            ret.sctn_count);
 
     return 0;
-}
+    
+    
+	munmap(m, sizeof(shared_memory_t));	
+	
+    
+} // end main

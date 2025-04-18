@@ -21,10 +21,10 @@ shared_memory_t *m;
 int main(){	
 	m = mmap(NULL, sizeof(shared_memory_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-	// Modify things
+		// Modify things
  	m->num_trains = 2;
 		
-	parse_t input = parse_file("input/intersections.txt", "input/trains.txt");
+	parse_t input = parse_file("input/intersections.txt", "input/trains.txt", m);
 	if(input.error > 0) printf("parse completed with errors\n\n");
 	else printf("parse completed without errors\n\n");
 	
