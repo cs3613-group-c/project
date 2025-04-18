@@ -8,12 +8,8 @@
  */
 #ifndef LOGGER_H
 #define LOGGER_H
-
-<<<<<<< HEAD
 #include "structures.h"
 
-=======
->>>>>>> f76832e1e7b404a9d955a6d1499a60dd150fd4bf
 // Start the logger and open the file we’ll write to
 void init_logger(const char *filename);
 

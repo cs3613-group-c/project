@@ -31,7 +31,7 @@ void train_process(train_t *train) {
     int current_position = 0;
     char log_message[MAX_LOG_SIZE];
     
-    while (current_position < train->route_length) {
+    while (current_position < train->route_len) {
         // Current intersection to acquire
         char* intersection_name = train->route[current_position];
         
