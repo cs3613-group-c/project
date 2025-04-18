@@ -98,8 +98,8 @@ void print_graph(resource_alloc_graph_t *graph);
 int graph_check_deadlock(resource_alloc_graph_t *graph);
 
 // Checks if there is a circular reference in our graph
-int graph_detect_cycle(resource_alloc_graph_t *graph, int *visited,
-                        int visited_len, int *recursed, int recursed_len,
-                        int process_id);
+int graph_detect_cycle(resource_alloc_graph_t *graph, bool *visited,
+                       int visited_len, bool *recursed, int recursed_len,
+                       int process_id);
 
 #endif

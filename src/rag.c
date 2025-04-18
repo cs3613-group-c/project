@@ -104,8 +104,8 @@ int graph_remove_request(resource_alloc_graph_t *graph, int process_id,
 // possibility of a deadlocks If there is a cycle, it will spit out the first
 // process in the cycle that it found
 int graph_check_deadlock(resource_alloc_graph_t *graph) {
-    int visited[MAX_PROCESSES] = {0};
-    int recursed[MAX_PROCESSES] = {0};
+    bool visited[MAX_PROCESSES] = {};
+    bool recursed[MAX_PROCESSES] = {};
 
     // Go through every unvisited node and check for cycles
     for (int i = 0; i < graph->processes_len; i++) {
@@ -124,8 +124,8 @@ int graph_check_deadlock(resource_alloc_graph_t *graph) {
 // call itself until it finds a processes it has already found. Its a bit
 // simplified, but if its found, then you found a cycle, and will return true.
 int graph_detect_cycle(resource_alloc_graph_t *graph,
-                       int visited[MAX_PROCESSES], int visited_len,
-                       int recursed[MAX_PROCESSES], int recursed_len,
+                       bool visited[MAX_PROCESSES], int visited_len,
+                       bool recursed[MAX_PROCESSES], int recursed_len,
                        int process_id) {
     if (recursed[process_id]) {
         return true;
@@ -134,8 +134,8 @@ int graph_detect_cycle(resource_alloc_graph_t *graph,
         return false;
     }
 
-    visited[process_id] = 1;
-    recursed[process_id] = 1;
+    visited[process_id] = true;
+    recursed[process_id] = true;
 
     // Check each resource to see if it is being requested by the process
     for (int i = 0; i < graph->resources_len; i++) {
