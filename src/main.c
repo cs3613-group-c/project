@@ -9,6 +9,7 @@
  */
 #include "parse.h"
 #include "structures.h"
+#include "message.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ipc.h>

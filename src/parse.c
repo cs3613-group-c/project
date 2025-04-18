@@ -9,6 +9,7 @@
  * the calling function.
  * Additionally, passes an error code indicating which errors have occured
  */
+#include "constants.h"
 #include "structures.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -184,7 +185,7 @@ parse_t parse_file(const char *intersections_file, const char *trains_file) {
                     j = 0;
                     continue;
                 }
-
+                
                 j++;
             }
 
@@ -220,7 +221,13 @@ parse_t parse_file(const char *intersections_file, const char *trains_file) {
         }
         count++;
     }
-
+    
+    for(int i = 0; i < MAX_INTERSECTIONS; i++){ //initialize intersections
+        
+        
+                
+    }
+    
     return ret;
 }
 
