@@ -6,9 +6,7 @@
  * Date: 4/4/2025
  * Description: Main program. Initializes shared resources, parses input files,
  * forks train processes, parses intersections.txt & trains.txt, cleans up.
- *
  */
-
 #include "parse.h"
 #include "structures.h"
 #include <stdio.h>

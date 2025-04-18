@@ -1,4 +1,11 @@
-// Erin Dunlap
+/*
+ * Group C
+ *
+ * Author: Erin Dunlap
+ * Email:
+ * Date:
+ * Description:
+ */
 #include "constants.h"
 #include "structures.h"
 #include <stdio.h>

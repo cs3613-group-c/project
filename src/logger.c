@@ -1,11 +1,16 @@
-// logger.c
-// Author: Erin Dunlap
-
+/*
+ * Group C
+ *
+ * Author: Erin Dunlap
+ * Email:
+ * Date:
+ * Description:
+ */
 #include "logger.h"
+#include <pthread.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 // Static variables used internally by the logger
 static FILE *log_file = NULL; // pointer to the log file

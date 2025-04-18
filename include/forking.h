@@ -1,6 +1,14 @@
-// Author: Erin Dunlap
+/*
+ * Group C
+ *
+ * Author: Erin Dunlap
+ * Email:
+ * Date:
+ * Description:
+ */
 #ifndef FORKING_H
 #define FORKING_H
+
 #include "structures.h"
 
 // Called from main to fork and simulate trains

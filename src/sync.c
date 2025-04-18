@@ -15,7 +15,6 @@
  * get_intersection_state: Get the current state of an intersection
  *
  */
-
 #include "sync.h"
 #include <pthread.h>
 #include <semaphore.h>

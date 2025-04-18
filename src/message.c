@@ -1,10 +1,18 @@
-// Author: Em Jordan
-// TODO: Figure out the best way to structure this so child processes are
-// restricted to their operations I think the parent process is going to manage
-// the shared memory space(?)
-//
-// TODO: I'll need to read the project document more just to make sure I have
-// the specifications right!
+/*
+ * Group C
+ *
+ * Author: Em Jordan
+ * Email: em.jordan@okstate.edu
+ * Date: 4/6/2025
+ * Description:
+ *
+ * TODO: Figure out the best way to structure this so child processes are
+ * restricted to their operations I think the parent process is going to manage
+ * the shared memory space(?)
+ *
+ * TODO: I'll need to read the project document more just to make sure I have
+ * the specifications right!
+ */
 #include "message.h"
 #include <stddef.h>
 #include <stdio.h>

@@ -1,8 +1,16 @@
-// Authors: Cade Blakeman & Em Jordan
-
-//RAG - Resource Allocation Graph
-//Creates a resource allocation graph that can be assigned edges depending on resource allocation or requests
-//Uses the graph to detect cycles within the trains
+/*
+ * Group C
+ *
+ * Authors: Cade Blakeman, Em Jordan
+ * Emails:
+ *
+ * Description:
+ *  - RAG - Resource Allocation Graph
+ *
+ *  Creates a resource allocation graph that can be assigned edges depending on
+ *  resource allocation or requests Uses the graph to detect cycles within the
+ *  trains
+ */
 #include "rag.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -93,8 +101,9 @@ int graph_remove_request(resource_alloc_graph_t *graph, int process_id,
     return 0;
 }
 
-//Function that checks for cycles in a graph. If there is a cycle, it means the possibility of a deadlocks
-//If there is a cycle, it will spit out the first process in the cycle that it found
+// Function that checks for cycles in a graph. If there is a cycle, it means the
+// possibility of a deadlocks If there is a cycle, it will spit out the first
+// process in the cycle that it found
 int graph_check_deadlock(resource_alloc_graph_t *graph) {
     int visited[MAX_PROCESSES] = {0};
     int recursed[MAX_PROCESSES] = {0};
@@ -112,9 +121,9 @@ int graph_check_deadlock(resource_alloc_graph_t *graph) {
     return -1;
 }
 
-
-//Recursive method that the graph_check_deadlock method calls. Will recursively call itself until it finds a processes it has already found.
-//Its a bit simplified, but if its found, then you found a cycle, and will return true.
+// Recursive method that the graph_check_deadlock method calls. Will recursively
+// call itself until it finds a processes it has already found. Its a bit
+// simplified, but if its found, then you found a cycle, and will return true.
 int graph_detect_cycle(resource_alloc_graph_t *graph,
                        int visited[MAX_PROCESSES], int visited_len,
                        int recursed[MAX_PROCESSES], int recursed_len,

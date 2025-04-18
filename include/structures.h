@@ -1,7 +1,9 @@
 /*
  * Group C
- *
- * Set of structs in the system. Add as needed.
+ * 
+ * Authors: Cade Blakeman, Gabe Cornelius, Drake Geeteh, Em Jordan
+ * Date:
+ * Description: Struct declarations for the project. Add as needed.
  *
  */
 #ifndef STRUCTURES_H

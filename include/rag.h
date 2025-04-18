@@ -1,4 +1,16 @@
-// Author: Em Jordan
+/*
+ * Group C
+ *
+ * Authors: Cade Blakeman, Em Jordan
+ * Emails:
+ *
+ * Description:
+ *  - RAG - Resource Allocation Graph
+ *
+ *  Creates a resource allocation graph that can be assigned edges depending on
+ *  resource allocation or requests Uses the graph to detect cycles within the
+ *  trains
+ */
 #ifndef RAG_H
 #define RAG_H
 

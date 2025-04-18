@@ -1,11 +1,13 @@
-// logger.h
-// Author: Erin Dunlap
-
+/*
+ * Group C
+ *
+ * Author: Erin Dunlap
+ * Email:
+ * Date:
+ * Description:
+ */
 #ifndef LOGGER_H
 #define LOGGER_H
-
-#include <pthread.h>
-#include <stdio.h>
 
 // Start the logger and open the file we’ll write to
 void init_logger(const char *filename);

@@ -1,3 +1,20 @@
+/*
+ * Group C
+ *
+ * Author: Drake Geeteh
+ * Email: drake.geeteh@okstate.edu
+ * Date: 4/4/2025
+ * Description: Includes the following synchronization mechanisms which will be
+ * integrated in the system:
+ *
+ * init_intersection_sync: Initialize sync primitives for an intersection
+ * cleanup_intersection_sync: Clean up sync primitives for an intersection
+ * try_acquire_intersection: Try to acquire an intersection
+ * release_intersection: Release an intersection
+ * is_train_holding_intersection: Check if a train is holding an intersection
+ * get_intersection_state: Get the current state of an intersection
+ *
+ */
 #ifndef SYNC_H
 #define SYNC_H
 
