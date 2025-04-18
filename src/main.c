@@ -22,6 +22,11 @@ FILE *log_file;
 int msgq_id;
 int shm_id;
 
+
+/* Assumptions:
+/* 1) write_log() exists
+/* 2) 2 instances of message_queue_t: request_queue and response_queue
+*/
 void train_process(train_t *train) {
     int current_position = 0;
     char log_message[MAX_LOG_SIZE];
