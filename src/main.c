@@ -22,8 +22,91 @@ FILE *log_file;
 int msgq_id;
 int shm_id;
 
-void train_process(train_t *train) {}
+void train_process(train_t *train) {
+    int current_position = 0;
+    char log_message[MAX_LOG_SIZE];
+    
+    while (current_position < train->route_length) {
+        // Current intersection to acquire
+        char* intersection_name = train->route[current_position];
+        
+        // Send acquire request
+        message_t request_msg = {
+            .type = REQUEST_ACQUIRE,
+            .src = train->name,
+            .dst = "SERVER",
+            .data = {
+                .acquire = intersection_name
+            }
+        };
+        
+        sprintf(log_message, "%s: Sent ACQUIRE request for %s.", train->name, intersection_name);
+        write_log(log_message);
+        
+        // Send message
+        send_request(request_queue, request_msg);
+        
+        // Wait for response
+        message_t response = wait_for_response(response_queue, train->name);
+        
+        // Check response type
+        if (response.type == RESPONSE_GRANT) {
+            sprintf(log_message, "%s: Acquired %s. Proceeding...", train->name, intersection_name);
+            write_log(log_message);
+            
 
+            // Sim travel time
+            sleep(2);
+            
+            // Move to next position
+            current_position++;
+            
+            // If not at the end, release the intersection
+            if (current_position < train->route_length) {
+                // Send release request
+                message_t release_msg = {
+                    .type = REQUEST_RELEASE,
+                    .src = train->name,
+                    .dst = "SERVER",
+                    .data = {
+                        .release = intersection_name
+                    }
+                };
+                
+                sprintf(log_message, "%s: Released %s.", train->name, intersection_name);
+                write_log(log_message);
+                
+                // Send message
+                send_request(request_queue, release_msg);
+            }
+        } else if (response.type == RESPONSE_WAIT) {
+            sprintf(log_message, "%s: Waiting for %s to become available.", train->name, intersection_name);
+            write_log(log_message);
+            
+            // Wait a bit and retry
+            sleep(1);
+        } else if (response.type == RESPONSE_DENY) {
+            sprintf(log_message, "%s: Denied access to %s due to deadlock resolution and will yield", 
+                    train->name, intersection_name);
+            write_log(log_message);
+            
+            // In case of deadlock resolution, we sleep longer
+            sleep(2);
+                        
+            // When a train is preempted:
+            sprintf(log_message, "%s: Backing off and will retry for %s.", train->name, intersection_name);
+            write_log(log_message);
+        }
+    }
+    
+    // Train has completed its route
+    sprintf(log_message, "%s: Completed route.", train->name);
+    write_log(log_message);
+    
+    exit(EXIT_SUCCESS);
+}
+
+//
 void server_process() {}
 
 int main() {
