@@ -2,7 +2,7 @@
  * Group C
  *
  * Authors: Cade Blakeman, Em Jordan
- * Emails:
+ * Date:
  *
  * Description:
  *  - RAG - Resource Allocation Graph
