@@ -14,10 +14,10 @@
 
 // Static variables used internally by the logger
 static FILE *log_file = NULL; // pointer to the log file
+static shared_memory_t* time_data = NULL; // having this to point to shared memory
 static int sim_time = 0;      // simulated time counter in seconds
 static pthread_mutex_t time_mutex =
-    PTHREAD_MUTEX_INITIALIZER; // This lock makes sure only one thing changes
-                               // the time at a time
+    PTHREAD_MUTEX_INITIALIZER; // This lock makes sure only one thing changes the time at a time
 
 // Start the logger by opening the file where we’ll write stuff
 void init_logger(const char *filename) {
@@ -37,43 +37,62 @@ void close_logger() {
     log_file = NULL;
 }
 
+void set_shared_time(shared_memory_t*, time_pointer) {
+    time_data = time_pointer;
+}
+
 // Add time to our fake stopwatch
+// Added new implementation to this method so that we can increment time using the shared mutex now
 void increment_sim_time(int units) {
-    pthread_mutex_lock(
-        &time_mutex);  // Lock the stopwatch so no one else changes it
-    sim_time += units; // Add time (like 1 or 2 seconds)
-    pthread_mutex_unlock(&time_mutex); // Unlock when done
+    if (time_data == NULL) return;
+
+    pthread_mutex_lock(&time_data->time_mutex);
+    time_data->sim_time += units;
+    pthread_mutex_unlock(&time_data->time_mutex);
+
+    // pthread_mutex_lock(
+        // &time_mutex);  // Lock the stopwatch so no one else changes it
+    // sim_time += units; // Add time (like 1 or 2 seconds)
+    // pthread_mutex_unlock(&time_mutex); // Unlock when done
 }
 
 // Current simulated time is returned in the [HH:MM:SS] format
+// Also added new implementation here for shared mutex
 char *get_formatted_sim_time() {
     static char buffer[16];
-    pthread_mutex_lock(
-        &time_mutex); // Lock time so it doesn't change while we read
+
+    if (time_data == NULL) return "[00:00:00]";
+
+    pthread_mutex_lock(&time_data->time_mutex);
+    int sim_time = time_data->sim_time;
+    pthread_mutex_unlock(&time_data->time_mutex);
+
+    // pthread_mutex_lock(
+        // &time_mutex); // Lock time so it doesn't change while we read
 
     int hours = sim_time / 3600;
     int minutes = (sim_time % 3600) / 60;
     int seconds = sim_time % 60;
 
-    pthread_mutex_unlock(&time_mutex); // Unlock time again
-    snprintf(buffer, sizeof(buffer), "[%02d:%02d:%02d]", hours, minutes,
-             seconds);
+    // pthread_mutex_unlock(&time_mutex); // Unlock time again
+    snprintf(buffer, sizeof(buffer), "[%02d:%02d:%02d]", hours, minutes, seconds);
     return buffer;
 }
 
 // This will log the formatted message with the current simulated time
 void log_event(const char *format, ...) {
-    if (!log_file)
+    if (log_file == NULL || time_data == NULL)
         return;
 
-    char buffer[1024]; // Make space for the message
+    // Question... do we already have something named for this?
+    char message[1024]; // Make space for the message
     va_list args;
 
     va_start(args, format);
-    vsnprintf(buffer, sizeof(buffer), format,
+    vsnprintf(message, sizeof(message), format,
               args); // Formatting the message with passed arguments
     va_end(args);
 
-    fprintf(log_file, "%s %s\n", get_formatted_sim_time(), buffer);
+    fprintf(log_file, "%s %s\n", get_formatted_sim_time(), message);
     fflush(log_file); // Implementing to immediately write to file
 }
