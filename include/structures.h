@@ -47,7 +47,7 @@ typedef struct {
 
 } train_t;
 
-typedef struct {
+typedef struct { //FIXME: make parse_file into a void method and delete this struct
     int routes[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count,
         sctn[MAX_ROUTE_LENGTH], sctn_count, error;
 } parse_t;

@@ -279,12 +279,18 @@ int main() {
     log_file = fopen("simulation.log", "w");                   // Open simulation.log file
 
     // FIXME: Check that these directories work
-    parse_t input = parse_file("input/intersections.txt", "input/trains.txt", shared_memory);
-
-    if (input.error > 0) {
-        printf("Issue with config file\n");
-        return 1;
+    //Parse input file data into shared memory: intersections, trains, num_intersections, num_trains
+    if(parse_file("input/intersections.txt", "input/trains.txt", shared_memory->intersections, shared_memory->trains, shared_memory->num_intersections, shared_memory->num_trains) > 0){
+        printf("parse completed with errors\n\n");
     }
+    else
+        printf("parse completed without errors\n\n");
+    
+    
+    
+
+    
+    
 
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {

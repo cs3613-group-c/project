@@ -12,8 +12,9 @@
 #ifndef PARSE_H
 #define PARSE_H
 
+#include "constants.h"
 #include "structures.h"
 
-parse_t parse_file(const char *intersections_file, const char *trains_file, shared_memory_t *mem);
+int parse_file(const char *sctns_filename, const char *trains_filename, intersection_t *sctns, train_t  *trains, int *num_sctns, int *num_trains);
 
 #endif

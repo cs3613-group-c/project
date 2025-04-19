@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "parse.h"
 #include "structures.h"
 #include <stdbool.h>
@@ -12,41 +13,41 @@
 
 shared_memory_t *m;
 int main() {
-    m = mmap(NULL, sizeof(shared_memory_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-
-    parse_t ret = parse_file("input/intersections.txt", "input/trains.txt", m);
-
-    if (ret.error > 0)
+    
+    parse_t ret = {{0}, 0, {0}, 0, 0};
+    intersection_t sctn[MAX_INTERSECTIONS] = {0};
+    train_t train[MAX_TRAINS] = {0};
+    int num_sctns = 0;
+    int num_trains = 0;
+    
+    if(parse_file("input/intersections.txt", "input/trains.txt", sctn, train, &num_sctns, &num_trains) > 0){
         printf("parse completed with errors\n\n");
+    }
     else
         printf("parse completed without errors\n\n");
 
-    for (int i = 0; i < ret.sctn_count;
+    for (int i = 0; i < num_sctns;
          i++) { // debug print for intersection assignment
-        if (ret.sctn[i] == 0)
+        if (sctn[i].capacity == 0)
             continue;
-        printf("Intersection = %c, size = %d\n", i + 'A', ret.sctn[i]);
+        printf("Intersection = %c, size = %d\n", i + 'A', sctn[i].capacity);
     }
 
-    for (int i = 0; i < ret.route_count; i++) {
+    for (int i = 0; i < num_trains; i++) {
         printf("\nTrain %d:", i + 1);
         // printf("j: %d", j);
 
         for (int j = 0; j < 26; j++) {
             // printf("i: %d, j: %d\n", i, j);
-            if (ret.routes[i][j] != 0)
-                printf("Sctn: %c, ", ret.routes[i][j]);
+            if (*train[i].route[j] != 0)
+                printf(" %s, ", train[i].route[j]);
         }
         printf("\n");
     }
 
-    printf("route count: %d\nsctn count: %d\n\n", ret.route_count,
-           ret.sctn_count);
+    printf("route count: %d\nsctn count: %d\n\n", num_trains,
+           num_sctns);
 
     return 0;
-    
-    
-	munmap(m, sizeof(shared_memory_t));	
-	
     
 } // end main

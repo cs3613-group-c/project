@@ -24,11 +24,15 @@ int main(){
 		// Modify things
  	m->num_trains = 2;
 		
-	parse_t input = parse_file("input/intersections.txt", "input/trains.txt", m);
+	int input = parse_file("input/intersections.txt", "input/trains.txt", m);
 	if(input.error > 0) printf("parse completed with errors\n\n");
 	else printf("parse completed without errors\n\n");
 	
+	//FIXME: change to appropriate call
 	table_init(m, input);
+	
+	
+	
 	// printf("num_trains: %d\n", mem->num_trains);
 	/* 
  	for(int i = 0; i < mem->num_intersections; i++){
