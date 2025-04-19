@@ -250,8 +250,6 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
     }
     
         
-    
-    
     //BEGIN intersection assignments
     *num_sctns = ret.sctn_count;
     // printf("\n\nDebug print num_sctns: %d\n\n", *num_sctns); //FIXME: DEBUG
