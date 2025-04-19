@@ -103,7 +103,7 @@ typedef struct {
     size_t tail;
 } message_queue_t;
 
-/* ALlocates a queue into our shared memory space */
+/* Allocates a queue into our shared memory space */
 message_queue_t *queue_alloc();
 
 /* Initializes a given queue */

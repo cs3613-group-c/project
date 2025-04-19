@@ -25,8 +25,9 @@ void increment_sim_time(int units);
 // Get the current fake time
 char *get_formatted_sim_time();
 
-// Using this for the modification to logger file and so that we can call it for shared time
-// Note to self: I think we already have handling for the shared_memory_t in header file
-void set_shared_time(shared_memory_t*, time_pointer);
+// Using this for the modification to logger file and so that we can call it for
+// shared time Note to self: I think we already have handling for the
+// shared_memory_t in header file
+void set_shared_time(shared_memory_t *shared_mem);
 
 #endif

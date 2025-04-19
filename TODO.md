@@ -5,6 +5,7 @@
 - [ ]  Move intersection data loading into parse function instead of in table
 - [ ]  Implement further error checking
   - [ ]  OPTIONAL: print error messages
+
 ## State Initialization
 
 ## Train Process

@@ -32,9 +32,6 @@ bool test_should_have_deadlock() {
         }
     }
 
-    // Test #1
-    printf("Test #1: Should have deadlock\n");
-
     // Create a deadlock between Process 1 & Process 2, containing a cycle
     // between R1 & R2
     if (graph_assign_edge(&graph, 0, 1, 1) != 0)
@@ -53,8 +50,6 @@ bool test_should_have_deadlock() {
 
     // prints the view of the graph, uncomment for bug fixing
     // print_graph(&graph);
-    //
-    //
     return has_deadlock != -1;
 }
 
@@ -64,7 +59,9 @@ bool test_random() {
 }
 
 int main() {
-    test_data_t tests[] = {{"Ensure randomness", test_random}};
+    test_data_t tests[] = {
+        {"Ensure randomness", test_random},
+    };
 
     test_all(tests, sizeof(tests) / sizeof(test_data_t));
 }
@@ -90,9 +87,6 @@ int test_main() {
             return 1;
         }
     }
-
-    // Test #1
-    printf("Test #1: Should have deadlock\n");
 
     // Create a deadlock between Process 1 & Process 2, containing a cycle
     // between R1 & R2
