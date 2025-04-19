@@ -18,5 +18,6 @@
 
 ## Resource Table - Gabe
 - [ ] Add table update calls from sync function
-- [ ] 
+- [ ] implement table_struct
+- [ ] Rework table.c to take a table struct pointer and operate on that
 
