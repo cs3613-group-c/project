@@ -48,7 +48,12 @@ typedef struct {
     resource_t resources[MAX_RESOURCES];
     // The number of resources we have in our `resources`
     int resources_len;
+	
 } resource_alloc_graph_t;
+
+//Function to be called from the server periodically
+//Checks the graph for deadlocks, if there is one, resolves it and pre-empts the problem process of a resource
+int deadlock_detection(resource_alloc_graph_t *graph);
 
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph);
@@ -95,11 +100,12 @@ void print_graph(resource_alloc_graph_t *graph);
 // where each resource of that cycle is a mutex NOTE(Cade): This is technically
 // more than specifications, which just ask for detecting cycles, so I might
 // change this in the future
-int graph_check_deadlock(resource_alloc_graph_t *graph);
+int *graph_check_deadlock(resource_alloc_graph_t *graph, int* cycle_list);
 
 // Checks if there is a circular reference in our graph
-int graph_detect_cycle(resource_alloc_graph_t *graph, bool *visited,
+int *graph_detect_cycle(resource_alloc_graph_t *graph, bool *visited,
                        int visited_len, bool *recursed, int recursed_len,
-                       int process_id);
+                       int process_id, int *cycle_list, int offset);
 
+int resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list);
 #endif

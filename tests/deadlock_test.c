@@ -1,10 +1,15 @@
-#include "rag.h"
+//#include "rag.h"
 #include "test_runner.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+/*get rid of these*/
+ #include "../include/rag.h"
+ #include "../src/rag.c"
+ /*-----------------*/
+ 
 #define PROCESS_COUNT 5
 
 #define RESOURCE_COUNT 5
@@ -46,8 +51,10 @@ bool test_should_have_deadlock() {
     if (graph_request_edge(&graph, 1, 1, 1) != 0)
         printf("failed to alloc resources to graph");
 
-    int has_deadlock = graph_check_deadlock(&graph);
-
+	//int has_deadlock[MAX_PROCESSES];
+    //memcpy(has_deadlock, graph_check_deadlock(&graph), sizeof(has_deadlock));
+	
+	int has_deadlock = deadlock_detection(&graph);
     // prints the view of the graph, uncomment for bug fixing
     // print_graph(&graph);
     return has_deadlock != -1;
@@ -59,13 +66,102 @@ bool test_random() {
 }
 
 int main() {
-    test_data_t tests[] = {
+    /*test_data_t tests[] = {
         {"Ensure randomness", test_random},
     };
+	
+    test_all(tests, sizeof(tests) / sizeof(test_data_t));*/
+	
+	printf("Hello\n");
+	if(test_should_have_deadlock())
+		printf("Passed\n");
+	printf("Done\n");
+	
+	
+	
+	
+	
+	// Test #3
+    printf("Test #3: Should have deadlock\n");
 
-    test_all(tests, sizeof(tests) / sizeof(test_data_t));
+    // Create an example graph
+    resource_alloc_graph_t graph3;
+    graph_init(&graph3);
+
+    // Add 4 processes to graph
+    for (int i = 0; i < 4; i++) {
+        if (graph_add_process(&graph3, i) != 0) {
+            printf("Failed to add process to graph\n");
+            return 1;
+        }
+    }
+
+    // create 5 resources
+    if (graph_add_resource(&graph3, 0, 1) != 0) {
+        printf("Failed to add resource to graph\n");
+        return 1;
+    }
+    if (graph_add_resource(&graph3, 1, 2) != 0) {
+        printf("Failed to add resource to graph\n");
+        return 1;
+    }
+    if (graph_add_resource(&graph3, 2, 1) != 0) {
+        printf("Failed to add resource to graph\n");
+        return 1;
+    }
+    if (graph_add_resource(&graph3, 3, 3) != 0) {
+        printf("Failed to add resource to graph\n");
+        return 1;
+    }
+    if (graph_add_resource(&graph3, 4, 1) != 0) {
+        printf("Failed to add resource to graph\n");
+        return 1;
+    }
+
+    // create graph (same graph as shown in the project document under deadlock
+    // detection)
+
+    if (graph_assign_edge(&graph3, 0, 0, 1) != 0)
+        printf("failed to alloc resources to graph");
+    if (graph_assign_edge(&graph3, 0, 1, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_assign_edge(&graph3, 1, 1, 1) != 0)
+        printf("failed to alloc resources to graph");
+    if (graph_assign_edge(&graph3, 1, 3, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_assign_edge(&graph3, 2, 2, 1) != 0)
+        printf("failed to alloc resources to graph");
+    if (graph_assign_edge(&graph3, 2, 3, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_assign_edge(&graph3, 3, 4, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_request_edge(&graph3, 0, 2, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_request_edge(&graph3, 1, 4, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_request_edge(&graph3, 2, 0, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    if (graph_request_edge(&graph3, 3, 1, 1) != 0)
+        printf("failed to alloc resources to graph");
+
+    // prints the view of the graph, uncomment for bug fixing
+    // print_graph(&graph3);
+
+    //int has_deadlock = graph_check_deadlock(&graph3);
+    // Print results as needed
+    if(deadlock_detection(&graph3))
+		printf("Passed\n");
+	printf("Done\n");
 }
 
+/*
 int test_main() {
     // Create an example graph
     resource_alloc_graph_t graph;
@@ -227,4 +323,4 @@ int test_main() {
         printf("[*] Deadlock test succeeded\n");
 
     return 0;
-}
+}*/

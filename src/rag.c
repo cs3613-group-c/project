@@ -10,10 +10,47 @@
  *  resource allocation or requests Uses the graph to detect cycles within the
  *  trains
  */
-#include "rag.h"
+ 
+ 
+ /*changes to delete */
+ #include "../include/rag.h"
+ 
+ //plans today
+ //change Detect cycle to output an array -done
+ //put deadlock resolution code in - done
+ //forcibly take resource from problem process
+ //make sure to update message queu
+ //make a function to do it all in 1 call from the server
+ 
+//#include "rag.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
+//returns 1 if a deadlock was detected and corrected
+int deadlock_detection(resource_alloc_graph_t *graph){
+	
+	int cycle_list[] = {[0 ... MAX_PROCESSES] = -1};
+
+	memcpy(cycle_list, graph_check_deadlock(graph, cycle_list), sizeof(cycle_list));
+	
+	if(cycle_list[0] >= 0)
+	{
+		printf("Deadlock Detection: Deadlock Detected\n");
+		printf("Cycle = [ ");
+		for(int i = 0; i < MAX_PROCESSES; i++)
+		{
+			printf("%d, ", cycle_list[i]);
+		}
+		printf("]\n");
+		
+		//MESSAGE -> DEADLOCK DETECTED
+		
+		if(resolve_deadlock(graph, cycle_list))
+			return 1;
+	}
+	return 0;
+}
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph) {
     graph->resources_len = 0;
@@ -100,58 +137,74 @@ int graph_remove_request(
 // Function that checks for cycles in a graph. If there is a cycle, it means the
 // possibility of a deadlocks If there is a cycle, it will spit out the first
 // process in the cycle that it found
-int graph_check_deadlock(resource_alloc_graph_t *graph) {
+int *graph_check_deadlock(resource_alloc_graph_t *graph, int *cycle_list) {
     bool visited[MAX_PROCESSES] = {};
     bool recursed[MAX_PROCESSES] = {};
-
+	
     // Go through every unvisited node and check for cycles
     for (int i = 0; i < graph->processes_len; i++) {
         if (!visited[i]) {
             // printf("Checking deadlocks beginning at process %d. \n", i);
 
-            if (graph_detect_cycle(
-                    graph, visited, graph->processes_len, recursed, graph->processes_len, i))
-                return i;
-        }
+            memcpy(cycle_list, graph_detect_cycle(graph, visited, graph->processes_len, recursed, graph->processes_len, i, cycle_list, 0), sizeof(cycle_list));
+            if (cycle_list[1] == true)
+			{
+				cycle_list[0] = i;
+                return cycle_list;
+			}
     }
-    return -1;
+    return cycle_list;
+	}
 }
 
 // Recursive method that the graph_check_deadlock method calls. Will recursively
 // call itself until it finds a processes it has already found. Its a bit
 // simplified, but if its found, then you found a cycle, and will return true.
-int graph_detect_cycle(
+int *graph_detect_cycle(
     resource_alloc_graph_t *graph,
     bool visited[MAX_PROCESSES],
     int visited_len,
     bool recursed[MAX_PROCESSES],
     int recursed_len,
-    int process_id) {
+    int process_id,
+	int *cycle_list, 
+	int offset) {
+		
     if (recursed[process_id]) {
-        return true;
+        cycle_list[offset] = process_id;
+        return cycle_list;
     }
     if (visited[process_id]) {
-        return false;
+        return cycle_list;
     }
 
     visited[process_id] = true;
     recursed[process_id] = true;
-
+	
     // Check each resource to see if it is being requested by the process
     for (int i = 0; i < graph->resources_len; i++) {
         if (graph->processes[process_id].request_list[i] > 0) {
-            for (int j = 0; i < graph->processes_len; j++) {
-                if (graph->resources[i].current_allocs[j] > 0) {
-                    if (graph_detect_cycle(
-                            graph, visited, visited_len, recursed, recursed_len, j)) {
-                        return true;
+            for (int j = 0; j < graph->processes_len; j++) {
+                if (graph->resources[i].current_allocs[j] > 0) 
+				{
+					cycle_list[offset] = process_id;
+					cycle_list[offset + 1] = i;
+					
+					memmove(cycle_list, graph_detect_cycle(graph, visited, visited_len, recursed, recursed_len, j, cycle_list, offset + 2), sizeof(cycle_list));
+					
+                    if (cycle_list[offset + 2] >= 0) 
+					{
+                        return cycle_list;
                     }
+					
+					cycle_list[offset] = -1;
+					cycle_list[offset + 1] = -1;
                 }
             }
         }
     }
     recursed[process_id] = false;
-    return false;
+    return cycle_list;
 }
 
 // prints out the current resource and process states
@@ -177,4 +230,39 @@ void print_graph(resource_alloc_graph_t *graph) {
         }
         printf("]\n");
     }
+}
+
+//finds the problem, announces it then deletes it. Returns false on an error
+int resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list)
+{
+	
+	int closest_process_id = 0;
+	int closest_processes = 0;
+	
+	//Find process closest to completion
+	for(int i = 0; i < MAX_PROCESSES; i += 2)
+	{
+		process_t *process = &graph->processes[i];
+		int requested_resources = 0;
+		
+		for(int j = 0; j < graph->resources_len; j++)
+		{
+			if(process->request_list[j] > 0)
+				requested_resources++;
+		}
+		
+		if(requested_resources < closest_processes)
+		{
+			closest_process_id = i;
+			closest_processes = requested_resources;
+		}
+	}
+	int problem_process = closest_process_id + 2;
+	
+	//Its worth noting that there doesn't need to be any catches for getting a negative integer, because the first process will be repeated at the end of the list due to the cycle.
+	//This means that its impossible for index 0 to be the problem process, it will always be the last index in the cycle instead
+	int deadlock_fix[2] = {cycle_list[problem_process], cycle_list[problem_process - 1]};
+	printf("Problem Process: %d\n", deadlock_fix[0]);
+	printf("Problem Resource: %d\n", deadlock_fix[1]);
+	return 1;	
 }
