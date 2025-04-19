@@ -21,8 +21,7 @@
 #define MAX_STR_LEN 256
 
 parse_t parse_file(const char *intersections_file, const char *trains_file, shared_memory_t *mem) {
-    
-    
+
     // Initialize each field in the struct
     // route[10][26], route_count, sctn[26], sctn_count, error
     parse_t ret = {{0}, 0, {0}, 0, 0};
@@ -49,13 +48,11 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
         int size = 0;
 
         for (int i = 0; i < sizeof(line); i++) {
-            if (line[i] == match0[i] &&
-                i < sizeof(match0) - 1) { // Currently Matching Intersection
+            if (line[i] == match0[i] && i < sizeof(match0) - 1) { // Currently Matching Intersection
                 continue;
             }
 
-            if ((line[i] != match0[i]) &&
-                i < sizeof(match0) - 1) { // fails to match 'Intersection'
+            if ((line[i] != match0[i]) && i < sizeof(match0) - 1) { // fails to match 'Intersection'
                 // printf("failed to match Intersection");
                 ret.error ^= 2;
                 return ret;
@@ -69,9 +66,8 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
                     ret.error ^= 2;
                     return ret;
                 }
-                if (line[i + 1] !=
-                    ':') { // Fails due to not found ':' at exptected location
-                           // (two char Int name or missing ':')
+                if (line[i + 1] != ':') { // Fails due to not found ':' at exptected location
+                                          // (two char Int name or missing ':')
                     ret.error ^= 2;
                     return ret;
                 }
@@ -113,15 +109,13 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
         int stop = 0;
         for (int i = 0, j = 0; i < sizeof(line); i++) {
             // printf("%c",line[i]);
-            if (line[i] == '\n' ||
-                line[i] == 0) { // break once you reach linebreak or end of file
+            if (line[i] == '\n' || line[i] == 0) { // break once you reach linebreak or end of file
                 break;
 
             } else if (!m1) { // state 0
 
                 if (match1[i] != line[i] &&
-                    i < sizeof(match1) -
-                            1) { // check if fails to match all of match1
+                    i < sizeof(match1) - 1) { // check if fails to match all of match1
                     // printf("break @ i %d\nline[i]: %c\n", i , line[i]);
                     ret.error ^= 8; // set error bit 3 for formatting issue with
                                     // trains.txt
@@ -136,7 +130,7 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
                         train = line[i] - '0';
                         ret.route_count++;
                         // printf("i %d\nline[i]: %c\n", i , line[i]);
-                    } else // failed to provide valid index for trains
+                    } else              // failed to provide valid index for trains
                         ret.error ^= 8; // set error bit 3 for formatting issue
                                         // with trains.txt
                 }
@@ -186,7 +180,7 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
                     j = 0;
                     continue;
                 }
-                
+
                 j++;
             }
 
@@ -199,9 +193,8 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
         if (ret.routes[i][0] == 0 && count == ret.route_count) {
             break;
         }
-        if (ret.routes[i][0] == 0 &&
-            count != ret.route_count) { // sets an error if you see a zero
-                                        // before you expect
+        if (ret.routes[i][0] == 0 && count != ret.route_count) { // sets an error if you see a zero
+                                                                 // before you expect
             printf("Error: nonconsecutive train numbers\n");
             ret.error ^= 16;
             break;
@@ -222,11 +215,7 @@ parse_t parse_file(const char *intersections_file, const char *trains_file, shar
         }
         count++;
     }
-    
-    
-    
-    
-    
+
     return ret;
 }
 

@@ -34,15 +34,15 @@ int table_init(shared_memory_t *m, parse_t parse) {
 }
 
 bool table_is_sctn_locked(int i) { // return 1 if locked and 0 otherwise
-    return ((*mem).intersections[i].num_holding_trains >
-            (*mem).intersections[i].capacity);
+    return ((*mem).intersections[i].num_holding_trains > (*mem).intersections[i].capacity);
 }
 
 void table_sctn_add_train(int sctn, int train) {
 
-    if (!(*mem).intersections[sctn].table_holding_trains
-             [train]) { // FIXME: Fairly sure this makes a race condition and
-                        // this check may be done somewhere else
+    if (!(*mem)
+             .intersections[sctn]
+             .table_holding_trains[train]) { // FIXME: Fairly sure this makes a race condition and
+                                             // this check may be done somewhere else
 
         (*mem).intersections[sctn].num_holding_trains++;
         (*mem).intersections[sctn].table_holding_trains[train] = true;
@@ -51,9 +51,10 @@ void table_sctn_add_train(int sctn, int train) {
 
 void table_sctn_rem_train(int sctn, int train) {
 
-    if ((*mem).intersections[sctn].table_holding_trains
-            [train]) { // FIXME: Fairly sure this makes a race condition and
-                       // this check may be done somewhere else
+    if ((*mem)
+            .intersections[sctn]
+            .table_holding_trains[train]) { // FIXME: Fairly sure this makes a race condition and
+                                            // this check may be done somewhere else
 
         (*mem).intersections[sctn].num_holding_trains--;
         (*mem).intersections[sctn].table_holding_trains[train] = false;
@@ -69,9 +70,11 @@ void table_print() {
 
     for (int i = 0, j = 0; i < (*mem).num_intersections; i++, j = 0) {
 
-        printf("Intersection: %c  |    %d     | %s |  ", (i + 'A'),
-               (*mem).intersections[i].capacity,
-               table_is_sctn_locked(i) ? "  Locked  " : " Unlocked ");
+        printf(
+            "Intersection: %c  |    %d     | %s |  ",
+            (i + 'A'),
+            (*mem).intersections[i].capacity,
+            table_is_sctn_locked(i) ? "  Locked  " : " Unlocked ");
         printf("[");
         if ((*mem).intersections[i].table_holding_trains[j])
             printf(" Train %d", j + 1);

@@ -33,8 +33,7 @@ int graph_add_process(resource_alloc_graph_t *graph, int process_id) {
 
 // Adds a resource to our current graph
 // This function will return 0 on success or a negative number on an error
-int graph_add_resource(resource_alloc_graph_t *graph, int resource_id,
-                       int max_count) {
+int graph_add_resource(resource_alloc_graph_t *graph, int resource_id, int max_count) {
     if (graph->resources_len >= MAX_RESOURCES) {
         return -1;
     }
@@ -46,8 +45,7 @@ int graph_add_resource(resource_alloc_graph_t *graph, int resource_id,
 
 // Creates a request edge on the graph from a process asking for x amount of a
 // resource (pointer from process to resource)
-int graph_request_edge(resource_alloc_graph_t *graph, int process_id,
-                       int resource_id, int count) {
+int graph_request_edge(resource_alloc_graph_t *graph, int process_id, int resource_id, int count) {
     resource_t *resource = &graph->resources[resource_id];
     process_t *process = &graph->processes[process_id];
 
@@ -57,8 +55,7 @@ int graph_request_edge(resource_alloc_graph_t *graph, int process_id,
 
 // Creates an assignment edge on the graph from a resource to a processes
 // (pointer from resource to process)
-int graph_assign_edge(resource_alloc_graph_t *graph, int process_id,
-                      int resource_id, int count) {
+int graph_assign_edge(resource_alloc_graph_t *graph, int process_id, int resource_id, int count) {
     resource_t *resource = &graph->resources[resource_id];
     process_t *process = &graph->processes[process_id];
 
@@ -72,8 +69,8 @@ int graph_assign_edge(resource_alloc_graph_t *graph, int process_id,
 }
 
 // Removes x count from an assignment edge
-int graph_remove_assignment(resource_alloc_graph_t *graph, int process_id,
-                            int resource_id, int count) {
+int graph_remove_assignment(
+    resource_alloc_graph_t *graph, int process_id, int resource_id, int count) {
     resource_t *resource = &graph->resources[resource_id];
     process_t *process = &graph->processes[process_id];
 
@@ -87,8 +84,8 @@ int graph_remove_assignment(resource_alloc_graph_t *graph, int process_id,
 }
 
 // Removes x count from an request edge
-int graph_remove_request(resource_alloc_graph_t *graph, int process_id,
-                         int resource_id, int count) {
+int graph_remove_request(
+    resource_alloc_graph_t *graph, int process_id, int resource_id, int count) {
     resource_t *resource = &graph->resources[resource_id];
     process_t *process = &graph->processes[process_id];
 
@@ -112,8 +109,8 @@ int graph_check_deadlock(resource_alloc_graph_t *graph) {
         if (!visited[i]) {
             // printf("Checking deadlocks beginning at process %d. \n", i);
 
-            if (graph_detect_cycle(graph, visited, graph->processes_len,
-                                   recursed, graph->processes_len, i))
+            if (graph_detect_cycle(
+                    graph, visited, graph->processes_len, recursed, graph->processes_len, i))
                 return i;
         }
     }
@@ -123,10 +120,13 @@ int graph_check_deadlock(resource_alloc_graph_t *graph) {
 // Recursive method that the graph_check_deadlock method calls. Will recursively
 // call itself until it finds a processes it has already found. Its a bit
 // simplified, but if its found, then you found a cycle, and will return true.
-int graph_detect_cycle(resource_alloc_graph_t *graph,
-                       bool visited[MAX_PROCESSES], int visited_len,
-                       bool recursed[MAX_PROCESSES], int recursed_len,
-                       int process_id) {
+int graph_detect_cycle(
+    resource_alloc_graph_t *graph,
+    bool visited[MAX_PROCESSES],
+    int visited_len,
+    bool recursed[MAX_PROCESSES],
+    int recursed_len,
+    int process_id) {
     if (recursed[process_id]) {
         return true;
     }
@@ -142,8 +142,8 @@ int graph_detect_cycle(resource_alloc_graph_t *graph,
         if (graph->processes[process_id].request_list[i] > 0) {
             for (int j = 0; i < graph->processes_len; j++) {
                 if (graph->resources[i].current_allocs[j] > 0) {
-                    if (graph_detect_cycle(graph, visited, visited_len,
-                                           recursed, recursed_len, j)) {
+                    if (graph_detect_cycle(
+                            graph, visited, visited_len, recursed, recursed_len, j)) {
                         return true;
                     }
                 }

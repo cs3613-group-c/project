@@ -88,9 +88,7 @@ message_t queue_dequeue(message_queue_t *queue) {
     return msg;
 }
 
-message_t queue_peek(message_queue_t *queue) {
-    return queue->items[queue->head];
-}
+message_t queue_peek(message_queue_t *queue) { return queue->items[queue->head]; }
 
 void send_request(message_queue_t *queue, message_t message) {
     if (queue_enqueue(queue, message) == -1) {
@@ -109,27 +107,31 @@ void handle_request(message_queue_t *queue, message_t message) {
     switch (msg.type) {
     case REQUEST_ACQUIRE:
         // TODO: Check for actual access via mutexes/semaphores
-        send_response(queue, (message_t){
-                                 .type = RESPONSE_GRANT,
-                                 .src = "SERVER",
-                                 .dst = message.src,
-                                 .data =
-                                     {
-                                         .grant = message.data.acquire,
-                                     },
-                             });
+        send_response(
+            queue,
+            (message_t){
+                .type = RESPONSE_GRANT,
+                .src = "SERVER",
+                .dst = message.src,
+                .data =
+                    {
+                        .grant = message.data.acquire,
+                    },
+            });
     case REQUEST_RELEASE:
         // TODO: Do we need to send a response for this? We'll set it as
         // granting anyway but
-        send_response(queue, (message_t){
-                                 .type = RESPONSE_GRANT,
-                                 .src = "SERVER",
-                                 .dst = message.src,
-                                 .data =
-                                     {
-                                         .grant = message.data.acquire,
-                                     },
-                             });
+        send_response(
+            queue,
+            (message_t){
+                .type = RESPONSE_GRANT,
+                .src = "SERVER",
+                .dst = message.src,
+                .data =
+                    {
+                        .grant = message.data.acquire,
+                    },
+            });
 
         break;
     default:
@@ -156,20 +158,21 @@ void handle_response(message_queue_t *queue, message_t message) {
     // TODO: properly link this with our intersections
     switch (msg.type) {
     case RESPONSE_GRANT:
-        printf("[CLIENT %s: INFO] Server has granted client access to "
-               "intersection",
-               message.dst);
+        printf(
+            "[CLIENT %s: INFO] Server has granted client access to "
+            "intersection",
+            message.dst);
     case RESPONSE_WAIT:
-        printf("[CLIENT %s: INFO] Server told client to wait for intersection",
-               message.dst);
+        printf("[CLIENT %s: INFO] Server told client to wait for intersection", message.dst);
         break;
     case RESPONSE_DENY:
-        printf("[CLIENT %s: WARN] Server was denied access to intersection",
-               message.dst);
+        printf("[CLIENT %s: WARN] Server was denied access to intersection", message.dst);
         break;
     default:
-        printf("[CLIENT %s: WARN] RECEIVED UNHANDLED MESSAGE: %s", message.dst,
-               message_type_name(msg.type));
+        printf(
+            "[CLIENT %s: WARN] RECEIVED UNHANDLED MESSAGE: %s",
+            message.dst,
+            message_type_name(msg.type));
         break;
     }
 }

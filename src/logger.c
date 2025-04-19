@@ -13,13 +13,11 @@
 #include <stdlib.h>
 
 // Static variables used internally by the logger
-static FILE *log_file = NULL; // pointer to the log file
-static shared_memory_t *shared_mem =
-    NULL;                // having this to point to shared memory
-static int sim_time = 0; // simulated time counter in seconds
-static pthread_mutex_t time_mutex =
-    PTHREAD_MUTEX_INITIALIZER; // This lock makes sure only one thing changes
-                               // the time at a time
+static FILE *log_file = NULL;              // pointer to the log file
+static shared_memory_t *shared_mem = NULL; // having this to point to shared memory
+static int sim_time = 0;                   // simulated time counter in seconds
+static pthread_mutex_t time_mutex = PTHREAD_MUTEX_INITIALIZER; // This lock makes sure only one
+                                                               // thing changes the time at a time
 
 // Start the logger by opening the file where we’ll write stuff
 void init_logger(const char *filename) {
@@ -78,8 +76,7 @@ char *get_formatted_sim_time() {
     int seconds = sim_time % 60;
 
     // pthread_mutex_unlock(&time_mutex); // Unlock time again
-    snprintf(buffer, sizeof(buffer), "[%02d:%02d:%02d]", hours, minutes,
-             seconds);
+    snprintf(buffer, sizeof(buffer), "[%02d:%02d:%02d]", hours, minutes, seconds);
     return buffer;
 }
 
@@ -93,8 +90,11 @@ void log_event(const char *format, ...) {
     va_list args;
 
     va_start(args, format);
-    vsnprintf(message, sizeof(message), format,
-              args); // Formatting the message with passed arguments
+    vsnprintf(
+        message,
+        sizeof(message),
+        format,
+        args); // Formatting the message with passed arguments
     va_end(args);
 
     fprintf(log_file, "%s %s\n", get_formatted_sim_time(), message);
