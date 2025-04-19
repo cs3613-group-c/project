@@ -24,10 +24,6 @@ FILE *log_file;
 int msgq_id;
 int shm_id;
 
-/* Assumptions:
-/* 1) write_log() exists
-/* 2) 2 instances of message_queue_t: request_queue and response_queue
-*/
 void train_process(train_t *train) {
     int current_position = 0;
     char log_message[MAX_LOG_SIZE];
@@ -117,8 +113,161 @@ void train_process(train_t *train) {
     exit(EXIT_SUCCESS);
 }
 
+// Current assumptions:
+// 1) find_intersection() exists
+// 2) if detect_deadlock() --> resolve_deadlock()
+void server_process() {
+    // Initialize the Resource Allocation Graph
+    graph_init(&rag);
+    for (int i = 0; i < shared_memory->num_trains; i++) {
+	graph_add_process(&rag, i);
+    }
+    for (int i = 0; i < shared_memory->num_intersections; i++) {
+	graph_add_resource(&rag, i, shared_memory->intersections[i].capacity);
+    }
+    
+
+    char log_message[MAX_LOG_SIZE];
+    int trains_completed = 0;
+    
+    while (trains_completed < shared_memory->num_trains) {
+        // Process request if any
+        if (request_queue->length > 0) {
+            // Dequeue the message
+            message_t req_msg = queue_dequeue(request_queue);
+            
+            // Check request type
+            if (req_msg.type == REQUEST_ACQUIRE) {
+                const char* train_name = req_msg.src;
+                const char* intersection_name = req_msg.data.acquire;
+                int intersection_idx = find_intersection(intersection_name);
+                intersection_t* intersection = &shared_memory->intersections[intersection_idx];
+                
+                // Find train index
+                int train_idx = -1;
+                for (int i = 0; i < shared_memory->num_trains; i++) {
+                    if (strcmp(shared_memory->trains[i].name, train_name) == 0) {
+                        train_idx = i;
+                        break;
+                    }
+                }
+                
+                /// Add request edge to RAG
+                graph_request_edge(&rag, train_idx, intersection_idx, 1);
+                
+                // Try to acquire the intersection using our sync library
+                if (try_acquire_intersection(intersection, train_name)) {
+                    // Successfully acquired the intersection
+                    // Update the RAG - remove request edge and add assignment edge
+                    graph_remove_request(&rag, train_idx, intersection_idx, 1);
+                    graph_assign_edge(&rag, train_idx, intersection_idx, 1);
+                    
+                    char state_str[MAX_LOG_SIZE/2]; // Use half the log message size for state
+                    get_intersection_state(intersection, state_str);
+                    snprintf(log_message, MAX_LOG_SIZE, "SERVER: GRANTED %s to %s. %s", 
+                            intersection_name, train_name, state_str);
+                    log_event(log_message);
+                    
+                    // Send grant response
+                    message_t resp_msg = {
+                        .type = RESPONSE_GRANT,
+                        .src = "SERVER",
+                        .dst = train_name,
+                        .data = {
+                            .grant = intersection_name
+                        }
+                    };
+                    send_response(response_queue, resp_msg);
+                } else {
+                    // Could not acquire the intersection
+                    char state_str[MAX_LOG_SIZE/2]; // Use half the log message size for state
+                    get_intersection_state(intersection, state_str);
+                    snprintf(log_message, MAX_LOG_SIZE, "SERVER: %s is busy. %s added to wait queue. %s", 
+                            intersection_name, train_name, state_str);
+                    log_event(log_message);
+                    
+                    // Send wait response
+                    message_t resp_msg = {
+                        .type = RESPONSE_WAIT,
+                        .src = "SERVER",
+                        .dst = train_name,
+                        .data = {
+                            .wait = NULL
+                        }
+                    };
+                    send_response(response_queue, resp_msg);
+                    
+                    // TODO: Check for deadlocks
+                    if (detect_deadlock()) {
+                        resolve_deadlock();
+                    }
+                    ////////////////////
+                }
+            } else if (req_msg.type == REQUEST_RELEASE) {
+                const char* train_name = req_msg.src;
+                const char* intersection_name = req_msg.data.release;
+                int intersection_idx = find_intersection(intersection_name);
+                intersection_t* intersection = &shared_memory->intersections[intersection_idx];
+                
+                // Find train index
+                int train_idx = -1;
+                for (int i = 0; i < shared_memory->num_trains; i++) {
+                    if (strcmp(shared_memory->trains[i].name, train_name) == 0) {
+                        train_idx = i;
+                        break;
+                    }
+                }
+                
+                // Release the intersection
+                release_intersection(intersection, train_name);
+                
+                // Update the RAG - remove assignment edge
+                graph_remove_assignment(&rag, train_idx, intersection_idx, 1);
+                
+                // Get the current state for logging
+                char state_str[MAX_LOG_SIZE/2]; // Use half the log message size for state
+                get_intersection_state(intersection, state_str);
+                snprintf(log_message, MAX_LOG_SIZE, "SERVER: %s released %s. %s", 
+                        train_name, intersection_name, state_str);
+                log_event(log_message);
+                
+                // Send confirmation
+                message_t resp_msg = {
+                    .type = RESPONSE_GRANT,
+                    .src = "SERVER",
+                    .dst = train_name,
+                    .data = {
+                        .grant = intersection_name
+                    }
+                };
+                send_response(response_queue, resp_msg);
+                
+                // Check if train has completed its route
+                int completed = 1;
+                for (int i = 0; i < shared_memory->num_trains; i++) {
+                    if (strcmp(shared_memory->trains[i].name, train_name) == 0) {
+                        if (shared_memory->trains[i].current_position >= shared_memory->trains[i].route_length) {
+                            trains_completed++;
+                        } else {
+                            completed = 0;
+                        }
+                        break;
+                    }
+                }
+                
+                if (completed) {
+                    sprintf(log_message, "%s: Completed route.", train_name);
+                    log_event(log_message);
+                }
+            }
+        }
+    }
+    
+    // All trains have completed
+    sprintf(log_message, "SIMULATION COMPLETE. All trains reached destinations.");
+    log_event(log_message);
+}
 //
-void server_process() {}
 
 int main() {
     pid_t pid;
