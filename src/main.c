@@ -124,9 +124,14 @@ int main() {
     shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
     log_file = fopen("simulation.log", "w"); // Open simulation.log file
 
-    parse_t input =
-        parse_file("input/intersections.txt", "input/trains.txt",
-                   shared_memory); // FIXME: Check that these directories work
+    // FIXME: Check that these directories work
+    // clang-format off
+    parse_t input = parse_file(
+        "input/intersections.txt",
+        "input/trains.txt",
+        shared_memory
+    ); 
+
     if (input.error > 0) {
         printf("Issue with config file\n");
         return 1;
