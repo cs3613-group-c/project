@@ -11,10 +11,11 @@
 
 #include "structures.h"
 
-int table_init(shared_memory_t *m, parse_t input);
-bool table_is_sctn_locked(int i);
-void table_sctn_add_train(int sctn, int train);
-void table_sctn_rem_train(int sctn, int train);
-void table_print();
+
+int table_init(intersection_t *sctn, train_t *train);
+void table_add_train(intersection_t *sctn, train_t *train);
+void table_wait_train(intersection_t *sctn, train_t *train);
+void table_rem_train(intersection_t *sctn, train_t *train);
+// void table_print();
 
 #endif

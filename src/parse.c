@@ -279,7 +279,12 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
         for(int j = 0; j < MAX_TRAINS; j++){
             sctns[i].table_holding_trains[j] = false;
             sprintf(sctns[i].holding_trains[j], "%d", 0);
+            sprintf(sctns[i].waiting_trains[j], "%d", 0);
+            
         }        
+        
+        sctns[i].is_locked = false;
+        
     }
     //END intersection assignments
     
@@ -294,6 +299,8 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
             
             //Count and assign route_len and route
             for(int j = 0; j < MAX_INTERSECTIONS; j++){
+                sprintf(trains[i].holding_intersections[j], "%d", 0);
+                sprintf(trains[i].waiting_intersections[j], "%d", 0);
                 
                 if(ret.routes[i][j] != 0){
                        
@@ -302,8 +309,8 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
                 
                 }
                 
-                else
-                    break;
+                // else
+                //     ;// break;
                 
             }
             trains[i].current_position = 0; //FIXME: consider initializing this to -1
@@ -313,6 +320,7 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
             
         }
     }
+    //End train assignment
     
     return error;
 }

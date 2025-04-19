@@ -26,7 +26,6 @@ typedef union {
 } intersection_lock_t;
 
 typedef struct {
-    // Modified for resource allocation table implementation - G.C.
     char name[MAX_NAME_LENGTH];
     int capacity;
     intersection_lock_type_t lock_type;
@@ -35,7 +34,11 @@ typedef struct {
     bool table_holding_trains[MAX_TRAINS]; // Boolean initialized to zero, to
                                            // index trains and indicate if they
                                            // are held
+                                           // FIXME: delete when feasible
     int num_holding_trains;
+    
+    char waiting_trains[MAX_TRAINS][MAX_NAME_LENGTH];
+    bool is_locked;
 } intersection_t;
 
 typedef struct {
@@ -44,7 +47,9 @@ typedef struct {
     char route[MAX_ROUTE_LENGTH][MAX_NAME_LENGTH];
     int route_len;
     int current_position;
-
+    
+    char holding_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH];
+    char waiting_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH];
 } train_t;
 
 typedef struct { //FIXME: make parse_file into a void method and delete this struct
@@ -59,8 +64,6 @@ typedef struct {
     int num_trains;
     pthread_mutex_t time_mutex;
     int sim_time;
-    parse_t input; // FIXME: temporary data structure until we can properly load
-                   // from parser into other structs
     message_queue_t request_queue;
     message_queue_t response_queue;
 } shared_memory_t;
