@@ -27,6 +27,18 @@ FILE *log_file;
 int msgq_id;
 int shm_id;
 
+
+
+int find_intersection(const char *inter_name)
+{
+	for(int i = 0; i < shared_memory->num_intersections; i++)
+	{
+		if(strcmp(inter_name, shared_memory->intersections[i].name))
+			return i;
+	}
+}
+
+
 void train_process(train_t *train) {
     int current_position = 0;
     char log_message[MAX_LOG_SIZE];
@@ -215,31 +227,28 @@ void server_process() {
                     if (output_array[0] != -1) // checking if there is a deadlock
                     {
                         char message[1024];
-                        train_t *problem_train = shared_memory->trains[output_array[0]];
+                        train_t problem_train = shared_memory->trains[output_array[0]];
                         intersection_t *problem_intersection =
-                            shared_memory->intersections[output_array[1]];
-
+                            &shared_memory->intersections[output_array[1]];
+						const char *train_name = problem_train.name;
                         sprintf(
                             message,
                             "Preempting %s from %s",
                             problem_intersection->name,
-                            problem_train->name);
+                            train_name);
                         log_event(message);
 
                         // attempt to release intersection from train
-                        if (release_intersection(
-                                &shared_memory->intersections[output_array[1]],
-                                &shared_memory->trains[output_array[0]])) {
-                            // remove edge from graph
-                            // TODO: which edge?
-                            graph_remove_edge(&rag, output_array[0], output_array[1], 1);
-                            sprintf =
-                                (message,
-                                 "%s released %s forcibly.",
-                                 problemTrain->name,
-                                 problemIntersection->name);
-                            log_event(message);
-                        }
+                        release_intersection(
+                                problem_intersection,
+                                problem_train.name); 
+                        graph_remove_assignment(&rag, output_array[0], output_array[1], 1);
+                        sprintf(
+							message,
+                            "%s released %s forcibly.",
+                            problem_train.name,
+                            problem_intersection->name);
+                        log_event(message);
                     }
                     ////////////////////
                 }
