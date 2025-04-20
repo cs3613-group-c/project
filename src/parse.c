@@ -11,34 +11,33 @@
  */
 #include "constants.h"
 #include "structures.h"
+#include <pthread.h>
+#include <semaphore.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
-#include <semaphore.h>
-#include <pthread.h>
 #include <stdlib.h>
+#include <string.h>
 
 // The name of the file to read intersections from
 #define INTERSECTION_FILE_NAME "Intersections.txt"
 // The max length of our strings to read from
 #define MAX_STR_LEN 256
 
-void init_intersection_sync(intersection_t *intersection); //Redeclaring this here from sync.h because of random linker error I couldn't fix :(
+void init_intersection_sync(
+    intersection_t *intersection); // Redeclaring this here from sync.h because of random linker
+                                   // error I couldn't fix :(
 
 void init_intersection_sync(intersection_t *intersection) {
     if (intersection->lock_type == LOCK_MUTEX) {
-        intersection->lock_data =
-            (intersection_lock_t *)malloc(sizeof(intersection_lock_t));
+        intersection->lock_data = (intersection_lock_t *)malloc(sizeof(intersection_lock_t));
         if (!intersection->lock_data) {
             perror("Failed to allocate mutex");
             exit(EXIT_FAILURE);
         }
-        intersection->lock_data->mutex =
-            (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+        intersection->lock_data->mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
         pthread_mutex_init(intersection->lock_data->mutex, NULL);
     } else {
-        intersection->lock_data =
-            (intersection_lock_t *)malloc(sizeof(intersection_lock_t));
+        intersection->lock_data = (intersection_lock_t *)malloc(sizeof(intersection_lock_t));
         if (!intersection->lock_data) {
             perror("Failed to allocate semaphore");
             exit(EXIT_FAILURE);
@@ -48,11 +47,16 @@ void init_intersection_sync(intersection_t *intersection) {
     }
 }
 
-
-int parse_file(const char *sctns_filename, const char *trains_filename, intersection_t *sctns, train_t *trains, int *num_sctns, int *num_trains) {
+int parse_file(
+    const char *sctns_filename,
+    const char *trains_filename,
+    intersection_t *sctns,
+    train_t *trains,
+    int num_sctns,
+    int num_trains) {
     int error = 0;
     // trains[0].route_len = 8;//DEBUG
-    
+
     // Initialize each field in the struct
     // route[10][26], route_count, sctn[26], sctn_count, error
     parse_t ret = {{0}, 0, {0}, 0, 0};
@@ -97,9 +101,8 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
                     error ^= 2;
                     return error;
                 }
-                if (line[i + 1] !=
-                    ':') { // Fails due to not found ':' at exptected location
-                           // (two char Int name or missing ':')
+                if (line[i + 1] != ':') { // Fails due to not found ':' at exptected location
+                                          // (two char Int name or missing ':')
                     error ^= 2;
                     return error;
                 }
@@ -150,7 +153,7 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
                     i < sizeof(match1) - 1) { // check if fails to match all of match1
                     // printf("break @ i %d\nline[i]: %c\n", i , line[i]);
                     error ^= 8; // set error bit 3 for formatting issue with
-                                    // trains.txt
+                                // trains.txt
                     break;
                 }
                 // if(match1[i] == line[i]) continue;
@@ -158,14 +161,14 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
                 if (match1[i] != line[i] && !m1) {
                     m1 = true;
                     j = 0;
-                    if (('1' <= line[i]) && (line[i]<= '9')) {
-                        
+                    if (('1' <= line[i]) && (line[i] <= '9')) {
+
                         train = line[i] - '0';
                         ret.route_count++;
                         // printf("i %d\nline[i]: %c\n", i , line[i]);
-                    } else // failed to provide valid index for trains
+                    } else          // failed to provide valid index for trains
                         error ^= 8; // set error bit 3 for formatting issue
-                                        // with trains.txt
+                                    // with trains.txt
                 }
             } // end state 0
 
@@ -174,7 +177,7 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
                 if (match2[j] != line[i] && j < sizeof(match2) - 1) {
                     printf("break @ i %d\nline[i]: %c\n", i, line[i]);
                     error ^= 8; // set error bit 3 for formatting issue with
-                                    // trains.txt
+                                // trains.txt
                     break;
                 }
 
@@ -202,7 +205,7 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
                 if (match3[j] != line[i] && j < sizeof(match2) - 1) {
                     // printf("break @@ i %d\nline[i]: %c\n", i , line[i]);
                     error ^= 8; // set error bit 3 for formatting issue with
-                                    // trains.txt
+                                // trains.txt
                     break;
                 }
 
@@ -248,84 +251,75 @@ int parse_file(const char *sctns_filename, const char *trains_filename, intersec
         }
         count++;
     }
-    
-        
-    //BEGIN intersection assignments
+
+    // BEGIN intersection assignments
     *num_sctns = ret.sctn_count;
     // printf("\n\nDebug print num_sctns: %d\n\n", *num_sctns); //FIXME: DEBUG
-    for(int i = 0; i < MAX_INTERSECTIONS; i++){ //initialize
+    for (int i = 0; i < MAX_INTERSECTIONS; i++) { // initialize
         // *sctn
         sctns[i].capacity = ret.sctn[i];
-        if(sctns[i].capacity != 0){ //check for which intersections are valid and assign them initial values
-            
-            //assign intersection names
-            sprintf(sctns[i].name, "Intersection %c", i+ 'A');
+        if (sctns[i].capacity !=
+            0) { // check for which intersections are valid and assign them initial values
+
+            // assign intersection names
+            sprintf(sctns[i].name, "Intersection %c", i + 'A');
             // printf("%s\n", sctns[i].name); //DEBUG
-            
-            //assign intersection lock type
-            if(sctns[i].capacity == 1){
+
+            // assign intersection lock type
+            if (sctns[i].capacity == 1) {
                 sctns[i].lock_type = LOCK_MUTEX;
-            }
-            else
+            } else
                 sctns[i].lock_type = LOCK_SEMAPHORE;
-            
+
             init_intersection_sync(&sctns[i]);
-                                    
         }
-        
-        //Initialize holding_trains data members: holding_trains, table_holding_trains, num_holding_trains
-        
+
+        // Initialize holding_trains data members: holding_trains, table_holding_trains,
+        // num_holding_trains
+
         sctns[i].num_holding_trains = 0;
-        for(int j = 0; j < MAX_TRAINS; j++){
+        for (int j = 0; j < MAX_TRAINS; j++) {
             sctns[i].table_holding_trains[j] = false;
             sprintf(sctns[i].holding_trains[j], "%d", 0);
             sprintf(sctns[i].waiting_trains[j], "%d", 0);
-            
-        }        
-        
+        }
+
         sctns[i].is_locked = false;
-        
     }
-    //END intersection assignments
-    
-    //BEGIN train assignments
+    // END intersection assignments
+
+    // BEGIN train assignments
     *num_trains = ret.route_count;
-    for(int i = 0, len = 0; i < MAX_TRAINS; i++, len = 0){
-        if(ret.routes[i][0] != 0){ //check for valid intersections only
-            
-            //Assign train name
-            sprintf(trains[i].name, "Train %d", i+1);
+    for (int i = 0, len = 0; i < MAX_TRAINS; i++, len = 0) {
+        if (ret.routes[i][0] != 0) { // check for valid intersections only
+
+            // Assign train name
+            sprintf(trains[i].name, "Train %d", i + 1);
             // printf("%s |", trains[i].name); //FIXME: DEBUG PRINT
-            
-            //Count and assign route_len and route
-            for(int j = 0; j < MAX_INTERSECTIONS; j++){
+
+            // Count and assign route_len and route
+            for (int j = 0; j < MAX_INTERSECTIONS; j++) {
                 sprintf(trains[i].holding_intersections[j], "%d", 0);
                 sprintf(trains[i].waiting_intersections[j], "%d", 0);
-                
-                if(ret.routes[i][j] != 0){
-                       
+
+                if (ret.routes[i][j] != 0) {
+
                     sprintf(trains[i].route[j], "Intersection %c", ret.routes[i][j]);
                     len++;
-                
                 }
-                
+
                 // else
                 //     ;// break;
-                
             }
-            trains[i].current_position = 0; //FIXME: consider initializing this to -1
+            trains[i].current_position = 0; // FIXME: consider initializing this to -1
             trains[i].route_len = len;
             // printf("%d\n", trains[i].route_len);
-            
-            
         }
     }
-    //End train assignment
-    
+    // End train assignment
+
     return error;
 }
-
-
 
 /* FIXME: check that these are up to date
 Error Codes:

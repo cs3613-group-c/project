@@ -15,6 +15,12 @@
 #include "constants.h"
 #include "structures.h"
 
-int parse_file(const char *sctns_filename, const char *trains_filename, intersection_t *sctns, train_t  *trains, int *num_sctns, int *num_trains);
+int parse_file(
+    const char *sctns_filename,
+    const char *trains_filename,
+    intersection_t *sctns,
+    train_t *trains,
+    int *num_sctns,
+    int *num_trains);
 
 #endif
