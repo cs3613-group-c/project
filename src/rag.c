@@ -20,37 +20,6 @@
 
 //EXTERNAL FUNCTIONS
 
-//detects and corrects deadlocks
-//returns the problem process and resource in an int array if a deadlock occured
-//returns [-1,-1] if no deadlock occured
-int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array){
-	
-	int cycle_list[] = {[0 ... MAX_PROCESSES] = -1};
-
-	memcpy(cycle_list, graph_check_deadlock(graph, cycle_list), sizeof(cycle_list));
-	
-	if(cycle_list[0] >= 0)
-	{
-		char message[1024];
-		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0]);	
-		
-		// Send deadlock detected messages -> might get an error out of bounds, ill probably fix this just by increasing the cycle list tbh
-		int i = 2;
-		while(cycle_list[i] >= 0)
-		{
-			char addString[64];
-			sprintf(addString, "-> Train%d, ", cycle_list[i]);
-			strcat(message, addString);
-			i += 2;
-		}
-		log_event(message);
-		memcpy(output_array, resolve_deadlock(graph, cycle_list, output_array), sizeof(output_array));
-		return output_array;
-	}
-	output_array[0] = -1;
-	output_array[1] = -1;
-	return output_array;
-}
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph) {
     graph->resources_len = 0;
@@ -135,9 +104,37 @@ int graph_remove_request(
 }
 
 
+//detects and corrects deadlocks
+//returns the problem process and resource in an int array if a deadlock occured
+//returns [-1,-1] if no deadlock occured
+int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array){
+	
+	int cycle_list[] = {[0 ... MAX_PROCESSES] = -1};
 
-
-
+	memcpy(cycle_list, graph_check_deadlock(graph, cycle_list), sizeof(cycle_list));
+	
+	if(cycle_list[0] >= 0)
+	{
+		char message[1024];
+		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0]);	
+		
+		// Send deadlock detected messages -> might get an error out of bounds, ill probably fix this just by increasing the cycle list tbh
+		int i = 2;
+		while(cycle_list[i] >= 0)
+		{
+			char addString[64];
+			sprintf(addString, "-> Train%d, ", cycle_list[i]);
+			strcat(message, addString);
+			i += 2;
+		}
+		log_event(message);
+		memcpy(output_array, resolve_deadlock(graph, cycle_list, output_array), sizeof(output_array));
+		return output_array;
+	}
+	output_array[0] = -1;
+	output_array[1] = -1;
+	return output_array;
+}
 
 //INTERNAL FUNCTIONS
 
@@ -215,31 +212,6 @@ int *graph_detect_cycle(
     return cycle_list;
 }
 
-// prints out the current resource and process states
-void print_graph(resource_alloc_graph_t *graph) {
-    // print processes
-    printf("Process Requests:\n");
-    for (int i = 0; i < graph->processes_len; i++) {
-        printf("ID: %d [ ", i);
-        for (int j = 0; j < graph->processes_len; j++) {
-            process_t *process = &graph->processes[i];
-            printf(" %d, ", process->request_list[j]);
-        }
-        printf("]\n");
-    }
-
-    // print resources
-    printf("Resource Allocations:\n");
-    for (int i = 0; i < graph->resources_len; i++) {
-        printf("ID: %d [ ", i);
-        for (int j = 0; j < graph->resources_len; j++) {
-            resource_t *resource = &graph->resources[i];
-            printf(" %d, ", resource->current_allocs[j]);
-        }
-        printf("]\n");
-    }
-}
-
 //finds the problem, announces it then deletes it. Returns false on an error
 int *resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list, int *output_array)
 {
@@ -274,4 +246,30 @@ int *resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list, int *outpu
 	//printf("Problem Process: %d\n", deadlock_fix[0]);
 	//printf("Problem Resource: %d\n", deadlock_fix[1]);
 	return output_array;	
+}
+
+// prints out the current resource and process states
+//mostly for bug fixing
+void print_graph(resource_alloc_graph_t *graph) {
+    // print processes
+    printf("Process Requests:\n");
+    for (int i = 0; i < graph->processes_len; i++) {
+        printf("ID: %d [ ", i);
+        for (int j = 0; j < graph->processes_len; j++) {
+            process_t *process = &graph->processes[i];
+            printf(" %d, ", process->request_list[j]);
+        }
+        printf("]\n");
+    }
+
+    // print resources
+    printf("Resource Allocations:\n");
+    for (int i = 0; i < graph->resources_len; i++) {
+        printf("ID: %d [ ", i);
+        for (int j = 0; j < graph->resources_len; j++) {
+            resource_t *resource = &graph->resources[i];
+            printf(" %d, ", resource->current_allocs[j]);
+        }
+        printf("]\n");
+    }
 }
