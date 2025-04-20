@@ -30,15 +30,21 @@ typedef struct {
     int capacity;
     intersection_lock_type_t lock_type;
     intersection_lock_t *lock_data;
-    char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH];
+    char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH]; //*1 this array is not strictly contiguous
+                                                      //   each index corresponds to a certain train
+                                                      //   this is to ensure random access and prevent 
+                                                      //   one train overwriting another
+                                                      //   train 1 is index 0
+
     bool table_holding_trains[MAX_TRAINS]; // Boolean initialized to zero, to
                                            // index trains and indicate if they
                                            // are held
                                            // FIXME: delete when feasible
     int num_holding_trains;
     
-    char waiting_trains[MAX_TRAINS][MAX_NAME_LENGTH];
+    char waiting_trains[MAX_TRAINS][MAX_NAME_LENGTH]; //See *1
     bool is_locked;
+    int index; //Train 1 = index 0
 } intersection_t;
 
 typedef struct {
@@ -48,8 +54,9 @@ typedef struct {
     int route_len;
     int current_position;
     
-    char holding_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH];
-    char waiting_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH];
+    char holding_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH]; //see *1
+    char waiting_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH]; //see *1
+    int index; //Intersection A = index 0
 } train_t;
 
 typedef struct { //FIXME: make parse_file into a void method and delete this struct

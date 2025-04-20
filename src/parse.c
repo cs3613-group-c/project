@@ -18,16 +18,83 @@
 #include <stdlib.h>
 #include <string.h>
 
-// The name of the file to read intersections from
-#define INTERSECTION_FILE_NAME "Intersections.txt"
 // The max length of our strings to read from
-#define MAX_STR_LEN 256
+void intersection_print_status(intersection_t *sctn){
+     //print name and capacity         
+        printf("sctn[%d]:\nname: %s\nindex: %d\ncapacity: %d\n", sctn->index, sctn->name, sctn->index, sctn->capacity);
+        
+        //print lock_type
+        if(sctn->lock_type == LOCK_MUTEX)
+            printf("lock_type: LOCK_MUTEX\n");
+        else if (sctn->lock_type == LOCK_SEMAPHORE)
+            printf("lock_type: LOCK_SEMAPHORE\n");
+        else //safety check for uninitialized
+            printf("lock_type: ERROR\n");
+        
+        //print is_locked, num_holding_trains, holding trains
+        printf("is_locked: %s\nnum_holding_trains: %d\nholding_trains: ", sctn->is_locked ? "True" : "False", sctn->num_holding_trains);
+        for(int j = 0; j < MAX_TRAINS; j++){ //holding trains print array
+            printf("%s|", sctn->holding_trains[j]);
+            
+        }
+        printf("\n");
+        
+        //print waiting_trains
+        printf("waiting_trains: ");
+        for(int j = 0; j < MAX_TRAINS; j++){ //holding trains print array
+            printf("%s|", sctn->waiting_trains[j]);
+            
+        }
+        printf("\n");
+                
+        printf("table_holding_trains:\n");
+        for(int j = 0; j < MAX_TRAINS; j++){ //expecting null
+        
+            printf("     Train %d, %s\n", j+1, sctn->table_holding_trains[j]== true ? "TRUE" : "FALSE");
+            
+        }
+        printf("\n\n");    
+}
 
-void init_intersection_sync(
+
+void train_print_status(train_t *train){
+    
+    printf("\ntrain[%d]:\nname: %s\nindex: %d\nroute_len: %d\ncurrent_position: %d\nroute:\n", train->index, train->name, train->index, train->route_len, train->current_position);
+
+        //print route
+        for (int j = 0; j < MAX_INTERSECTIONS; j++) {
+            // printf("i: %d, j: %d\n", i, j);
+            if (strcmp(train->route[j],"" ))
+                printf("     %s\n", train->route[j]);
+        }
+        printf("\n");
+        
+        //print holding_intersections
+        printf("holding_intersections: ");
+        for(int j = 0; j < MAX_INTERSECTIONS; j++){ 
+            printf("%s|", train->holding_intersections[j]);
+            
+        }
+        printf("\n");
+        
+        //print waiting_intersections
+        printf("waiting_intersections: ");
+        for(int j = 0; j < MAX_INTERSECTIONS; j++){ 
+            printf("%s|", train->waiting_intersections[j]);
+            
+        }
+        printf("\n");
+    
+    
+}
+
+
+
+void parse_init_intersection_sync(
     intersection_t *intersection); // Redeclaring this here from sync.h because of random linker
                                    // error I couldn't fix :(
 
-void init_intersection_sync(intersection_t *intersection) {
+void parse_init_intersection_sync(intersection_t *intersection) {
     if (intersection->lock_type == LOCK_MUTEX) {
         intersection->lock_data = (intersection_lock_t *)malloc(sizeof(intersection_lock_t));
         if (!intersection->lock_data) {
@@ -52,8 +119,8 @@ int parse_file(
     const char *trains_filename,
     intersection_t *sctns,
     train_t *trains,
-    int num_sctns,
-    int num_trains) {
+    int *num_sctns,
+    int *num_trains) {
     int error = 0;
     // trains[0].route_len = 8;//DEBUG
 
@@ -66,15 +133,13 @@ int parse_file(
     //  			 }
 
     // File Format: IntersectionName:Capacity
-    char intName[MAX_STR_LEN] = INTERSECTION_FILE_NAME;
     FILE *sctns_file = fopen(sctns_filename, "r");
     if (sctns_file == NULL) {
-        perror(strcat(intName, " not found"));
         error ^= 1;
         return error;
     }
 
-    char line[MAX_STR_LEN];
+    char line[MAX_NAME_LENGTH];
     int l = 0; // line number for indexing into our sctn array
 
     while (fgets(line, sizeof(line), sctns_file)) {
@@ -263,6 +328,10 @@ int parse_file(
 
             // assign intersection names
             sprintf(sctns[i].name, "Intersection %c", i + 'A');
+            
+            //assign index for ease of index access
+            sctns[i].index = i;
+            
             // printf("%s\n", sctns[i].name); //DEBUG
 
             // assign intersection lock type
@@ -271,7 +340,7 @@ int parse_file(
             } else
                 sctns[i].lock_type = LOCK_SEMAPHORE;
 
-            init_intersection_sync(&sctns[i]);
+            parse_init_intersection_sync(&sctns[i]);
         }
 
         // Initialize holding_trains data members: holding_trains, table_holding_trains,
@@ -295,6 +364,7 @@ int parse_file(
 
             // Assign train name
             sprintf(trains[i].name, "Train %d", i + 1);
+            trains[i].index = i;
             // printf("%s |", trains[i].name); //FIXME: DEBUG PRINT
 
             // Count and assign route_len and route

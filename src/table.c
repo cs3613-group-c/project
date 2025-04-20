@@ -10,7 +10,7 @@
 #include "structures.h"
 #include <stdbool.h>
 #include <stdio.h>
-
+#include <string.h>
 // shared_memory_t *mem;
 
 // int table_init(intersection_t *sctns, train_t *train) {
@@ -38,44 +38,69 @@
 //     return (sctns[i].num_holding_trains > sctns[i].capacity);
 // }
 
-void table_sctn_add_train(intersection_t *sctn, train_t *train) {
-
-    (*sctn).num_holding_trains++;
+void table_add_train(intersection_t *sctn, train_t *train) {
+    
+    //increment intersection's train count
+    if(sctn->num_holding_trains < sctn->capacity && !sctn->table_holding_trains[train->index]){ //check that the train is not yet in the intersection
+            
+        (*sctn).num_holding_trains++;
+        (*sctn).table_holding_trains[train->index] = true;
+        
+        //Add train and intersection to each other's tracking array
+        strcpy(train->holding_intersections[sctn->index], sctn->name);
+        strcpy(sctn->holding_trains[train->index], train->name);
+        
+        if(sctn->num_holding_trains >= sctn->capacity)
+            sctn->is_locked = true;
+        
+        //remove train and intersection from each others' waiting arrays in case of entries
+        strcpy(sctn->waiting_trains[train->index], "0");
+        strcpy(train->waiting_intersections[sctn->index], "0");
+        
+    }
+    
 }
 
-// void table_sctn_rem_train(int sctns, int train) {
+void table_rem_train(intersection_t *sctn, train_t *train) {
+    if(sctn->table_holding_trains[train->index]){ //check that the train is in the intersection
+        
+    //decrement intersection's train count
+    (*sctn).num_holding_trains--;
+    (*sctn).table_holding_trains[train->index] = false;
+    
+    //Remove the train and intersection from their tracking array
+    strcpy(train->holding_intersections[sctn->index], "0");
+    strcpy(sctn->holding_trains[train->index], "0");
+    
+    //Set the lock status according to the new count
+    if(sctn->num_holding_trains < sctn->capacity)
+        sctn->is_locked = false;
+    }
+    
+   
+}
 
-//     if ((sctns[sctn]
-//             .table_holding_trains[train]) { // FIXME: Fairly sure this makes a race condition and
-//                                             // this check may be done somewhere else
+void table_print(intersection_t *sctns, train_t *trains, int num_sctns) {
 
-//         sctns[sctn].num_holding_trains--;
-//         sctns[sctn].table_holding_trains[train] = false;
-//     }
-// }
 
-// void table_print() {
+    printf("Intersection: ID | Capacity | Lock State | Held Trains | Holding Trains\n");
 
-//     printf("table print\n");
-
-//     char lock[] = "locked";
-//     printf("Intersection: ID | Capacity | Lock State | Holding Trains\n");
-
-//     for (int i = 0, j = 0; i < (*mem).num_intersections; i++, j = 0) {
-
-//         printf(
-//             "Intersection: %c  |    %d     | %s |  ",
-//             (i + 'A'),
-//             sctns[i].capacity,
-//             table_is_sctn_locked(i) ? "  Locked  " : " Unlocked ");
-//         printf("[");
-//         if (sctns[i].table_holding_trains[j])
-//             printf(" Train %d", j + 1);
-//         for (int j = 1; j < MAX_TRAINS; j++) {
-//             // printf("%d", sctns[i].table_holding_trains[j]);
-//             if (sctns[i].table_holding_trains[j])
-//                 printf(", Train %d", j + 1);
-//         }
-//         printf(" ]\n");
-//     }
-// }
+    for (int i = 0, j = 0; i < num_sctns; i++, j = 0) {
+        printf(
+            "Intersection: %c  |    %d     | %s |      %d      |  ",
+            (i + 'A'),
+            sctns[i].capacity,
+            sctns[i].is_locked ? "  Locked  " : " Unlocked ",
+            sctns[i].num_holding_trains);
+        printf("[");
+        if (sctns[i].table_holding_trains[j])
+            printf(" Train %d", j + 1);
+        for (int j = 1; j < MAX_TRAINS; j++) {
+            // printf("%d", sctns[i].table_holding_trains[j]);
+            if (sctns[i].table_holding_trains[j])
+                printf(", Train %d", j + 1);
+        }
+        printf(" ]\n");
+    }
+    
+}

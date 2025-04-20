@@ -17,6 +17,8 @@
 ## Cleanup Resources
 
 ## Resource Table - Gabe
+- [ ] Incorporate index handling into table test
+- [ ] 
 - [ ] Add table update calls from sync function
 - [ ] implement table_struct
 - [ ] Rework table.c to take a table struct pointer and operate on that

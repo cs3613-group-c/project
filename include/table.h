@@ -16,6 +16,6 @@ int table_init(intersection_t *sctn, train_t *train);
 void table_add_train(intersection_t *sctn, train_t *train);
 void table_wait_train(intersection_t *sctn, train_t *train);
 void table_rem_train(intersection_t *sctn, train_t *train);
-// void table_print();
+void table_print(intersection_t *sctn, train_t *train, int num_sctns);
 
 #endif

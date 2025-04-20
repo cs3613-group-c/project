@@ -23,4 +23,6 @@ int parse_file(
     int *num_sctns,
     int *num_trains);
 
+void train_print_status(train_t *train);
+void intersection_print_status(intersection_t *sctn);
 #endif

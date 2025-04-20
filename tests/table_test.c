@@ -20,18 +20,33 @@ shared_memory_t *m;
 
 int main(){	
 	m = mmap(NULL, sizeof(shared_memory_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-
-		// Modify things
- 	m->num_trains = 2;
+	
 		
-	int input = parse_file("input/intersections.txt", "input/trains.txt", m);
-	if(input.error > 0) printf("parse completed with errors\n\n");
+	if(parse_file("input/intersections.txt", "input/trains.txt", m->intersections, m->trains , &m->num_intersections, &m->num_trains) > 0) printf("parse completed with errors\n\n");
 	else printf("parse completed without errors\n\n");
 	
+	printf("test 1: Add train 1 to intersection A\n");
+	table_add_train(&m->intersections[0], &m->trains[0]);
+	table_print(m->intersections, m->trains, m->num_intersections);
+	
+	printf("\n\ntest 2: Add train 1 to intersection A again\n");
+	table_add_train(&m->intersections[0], &m->trains[0]);
+	table_print(m->intersections, m->trains, m->num_intersections);
+	
+	
+	printf("\n\ntest 3: Remove train 1 to intersection A\n");
+	table_rem_train(&m->intersections[0], &m->trains[0]);
+	table_print(m->intersections, m->trains, m->num_intersections);
+	
+	
+	table_add_train(&m->intersections[0], &m->trains[0]);
+	
+	printf("\n");
+	intersection_print_status(&m->intersections[0]);
+	
+	train_print_status(&m->trains[0]);
 	//FIXME: change to appropriate call
-	table_init(m, input);
-	
-	
+	// table_init(m, input);
 	
 	// printf("num_trains: %d\n", mem->num_trains);
 	/* 
@@ -52,15 +67,15 @@ int main(){
 	}
 	*/
 
-	table_sctn_add_train(0, 0);
-	table_sctn_add_train(0, 1);
-	table_sctn_add_train(0, 1);
-	table_sctn_add_train(0, 2);
-	printf("Intersection %c num_holding_trains: %d\n",0 + 'A',(*m).intersections[0].num_holding_trains);
+	// table_sctn_add_train(0, 0);
+	// table_sctn_add_train(0, 1);
+	// table_sctn_add_train(0, 1);
+	// table_sctn_add_train(0, 2);
+	// printf("Intersection %c num_holding_trains: %d\n",0 + 'A',(*m).intersections[0].num_holding_trains);
 	
-	printf("Intersection %c num_holding_trains: %d\n",0 + 'A',(*m).intersections[0].num_holding_trains);
+	// printf("Intersection %c num_holding_trains: %d\n",0 + 'A',(*m).intersections[0].num_holding_trains);
 		
-	table_print();
+	// table_print();
 	
 	munmap(m, sizeof(shared_memory_t));	
 	
