@@ -69,9 +69,9 @@ int queue_enqueue(message_queue_t *queue, message_t msg) {
     }
 
     // Push our message into the queue
-    size_t next_index = (queue->tail + 1) % queue->capacity;
-    queue->tail = next_index;
-    queue->items[next_index] = msg;
+    queue->items[queue->tail] = msg;
+    // Update our tail & length
+    queue->tail = (queue->tail + 1) % queue->capacity;
     queue->length++;
     return 0;
 }
@@ -97,18 +97,18 @@ void send_request(message_queue_t *queue, message_t message) {
     }
 }
 
-void handle_request(message_queue_t *queue, message_t message) {
+void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, message_t message) {
     // if we don't have a message to process, ignore it
-    if (queue->length <= 0)
+    if (req_queue->length <= 0 || queue_peek(req_queue).type == MESSAGE_OPEN_SLOT)
         return;
 
-    message_t msg = queue_dequeue(queue);
+    message_t msg = queue_dequeue(req_queue);
 
     switch (msg.type) {
     case REQUEST_ACQUIRE:
         // TODO: Check for actual access via mutexes/semaphores
         send_response(
-            queue,
+            res_queue,
             (message_t){
                 .type = RESPONSE_GRANT,
                 .src = "SERVER",
@@ -122,7 +122,7 @@ void handle_request(message_queue_t *queue, message_t message) {
         // TODO: Do we need to send a response for this? We'll set it as
         // granting anyway but
         send_response(
-            queue,
+            res_queue,
             (message_t){
                 .type = RESPONSE_GRANT,
                 .src = "SERVER",

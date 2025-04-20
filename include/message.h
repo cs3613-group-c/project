@@ -75,9 +75,9 @@ typedef struct {
 } message_t;
 
 /* A message that will indicate an open space in our message queue */
-#define MSG_OPEN_SLOT                                                          \
-    (message_t) {                                                              \
-        MESSAGE_OPEN_SLOT, "", "", { .open_slot = NULL }                       \
+#define MSG_OPEN_SLOT                                                                              \
+    (message_t) {                                                                                  \
+        MESSAGE_OPEN_SLOT, "", "", { .open_slot = NULL }                                           \
     }
 
 /*
@@ -126,7 +126,7 @@ message_t queue_peek(message_queue_t *queue);
 /* Puts a message into the request queue to be processed */
 void send_request(message_queue_t *queue, message_t message);
 /* Handles a given message from the request queue */
-void handle_request(message_queue_t *queue, message_t message);
+void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, message_t message);
 
 /* The response queue's logic for sending messages from the server to the trains
  */

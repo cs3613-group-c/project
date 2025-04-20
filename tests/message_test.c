@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -10,23 +11,35 @@
 #define MAX_QUEUE_SIZE 1024
 #define CLIENT_COUNT 3
 
+// Simple macros that will make logging our processes easy
+#define CLIENT_MSG(name, msg) printf("[CLIENT: " name "] " msg "\n")
+#define LOG_CLIENT(name, format, ...) printf("[CLIENT: " name "] " format "\n", __VA_ARGS__)
+
+#define SERVER_MSG(msg) printf("[SERVER] " msg "\n")
+#define LOG_SERVER(format, ...) printf("[SERVER] " format "\n", __VA_ARGS__)
+
 // Global references to our message queue pointers
 message_queue_t *request_queue;
 message_queue_t *response_queue;
 // Whether our server is running or not
-bool *running;
+int *messages_left = 0;
 
 // Creates a basic queue to share between processes using `mmap`
 message_queue_t *create_queue(size_t capacity) {
     // Create our dynamic array for our queue
-    message_t *items =
-        mmap(NULL, capacity * sizeof(message_t), PROT_READ | PROT_WRITE,
-             MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    message_t *items = mmap(
+        NULL,
+        capacity * sizeof(message_t),
+        PROT_READ | PROT_WRITE,
+        MAP_SHARED | MAP_ANONYMOUS,
+        -1,
+        0);
 
     // Create a separate mapping in memory for our actual queue
-    message_queue_t *queue =
-        mmap(NULL, sizeof(message_queue_t), PROT_READ | PROT_WRITE,
-             MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    message_queue_t *queue = mmap(
+        NULL, sizeof(message_queue_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    memset(items, capacity, MESSAGE_OPEN_SLOT);
 
     // Initialize our queue data
     queue_init(queue);
@@ -44,35 +57,29 @@ void destroy_queue(message_queue_t *queue) {
 }
 
 // Handles SIGINT for our server process
-void server_handler(int sig) { *running = false; }
+void server_handler(int sig) { *messages_left = 0; }
 
 void server() {
-    while (*running) {
+    while (*messages_left > 0) {
         // if we don't have a message to process, ignore it
-        if (request_queue->length <= 0)
+        if (request_queue->length <= 0 || queue_peek(request_queue).type == MESSAGE_OPEN_SLOT)
             continue;
 
         message_t msg = queue_dequeue(request_queue);
-        handle_request(request_queue, msg);
+
+        LOG_SERVER("Received message from %s: %s", msg.src, message_type_name(msg.type));
+        handle_request(request_queue, response_queue, msg);
     }
 }
-
-// Simple macros that will make logging our processes easy
-#define CLIENT_MSG(name, msg) printf("[CLIENT: " name "] " msg "\n")
-#define LOG_CLIENT(name, format, ...)                                          \
-    printf("[CLIENT: " name "] " format "\n", __VA_ARGS__)
-
-#define SERVER_MSG(name, msg) printf("[SERVER] " msg "\n")
-#define LOG_SERVER(format, ...) printf("[SERVER]" format "\n", __VA_ARGS__)
 
 void client_a() {
     CLIENT_MSG("A", "Initialized client");
 
     // Attempt to acquire Intersection D
-    send_request(request_queue, (message_t){.type = REQUEST_ACQUIRE,
-                                            .src = "A",
-                                            .dst = "SERVER",
-                                            .data = {.acquire = "D"}});
+    send_request(
+        request_queue,
+        (message_t){
+            .type = REQUEST_ACQUIRE, .src = "A", .dst = "SERVER", .data = {.acquire = "D"}});
 
     message_t msg = wait_for_response(response_queue, "A");
 }
@@ -81,10 +88,10 @@ void client_b() {
     CLIENT_MSG("B", "Initialized client");
 
     // Attempt to acquire Intersection E
-    send_request(request_queue, (message_t){.type = REQUEST_ACQUIRE,
-                                            .src = "B",
-                                            .dst = "SERVER",
-                                            .data = {.acquire = "E"}});
+    send_request(
+        request_queue,
+        (message_t){
+            .type = REQUEST_ACQUIRE, .src = "B", .dst = "SERVER", .data = {.acquire = "E"}});
 
     message_t msg = wait_for_response(response_queue, "B");
 }
@@ -93,10 +100,10 @@ void client_c() {
     CLIENT_MSG("C", "Initialized client");
 
     // Attempt to acquire Intersection E
-    send_request(request_queue, (message_t){.type = REQUEST_ACQUIRE,
-                                            .src = "C",
-                                            .dst = "SERVER",
-                                            .data = {.acquire = "F"}});
+    send_request(
+        request_queue,
+        (message_t){
+            .type = REQUEST_ACQUIRE, .src = "C", .dst = "SERVER", .data = {.acquire = "F"}});
 
     message_t msg = wait_for_response(response_queue, "C");
 }
@@ -107,9 +114,9 @@ int main() {
 
     // set our running state to true -- we should care about sync here but this
     // is just a small demonstration
-    running = mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE,
-                   MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    *running = true;
+    messages_left =
+        mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    *messages_left = CLIENT_COUNT;
 
     // Run three separate clients with different behaviors
     pid_t clients[CLIENT_COUNT];
