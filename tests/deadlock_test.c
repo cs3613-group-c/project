@@ -1,14 +1,9 @@
-//#include "rag.h"
+#include "rag.h"
 #include "test_runner.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-/*get rid of these*/
- #include "../include/rag.h"
- #include "../src/rag.c"
- /*-----------------*/
  
 #define PROCESS_COUNT 5
 
@@ -54,10 +49,13 @@ bool test_should_have_deadlock() {
 	//int has_deadlock[MAX_PROCESSES];
     //memcpy(has_deadlock, graph_check_deadlock(&graph), sizeof(has_deadlock));
 	
-	int has_deadlock = deadlock_detection(&graph);
+	int test[2] = {-1, -1};
+	memcpy(test, deadlock_detection(&graph, test), sizeof(test));
+    if(test[0] >= 0)
+		return 1;
     // prints the view of the graph, uncomment for bug fixing
     // print_graph(&graph);
-    return has_deadlock != -1;
+    return 0;
 }
 
 bool test_random() {
@@ -72,7 +70,7 @@ int main() {
 	
     test_all(tests, sizeof(tests) / sizeof(test_data_t));*/
 	
-	printf("Hello\n");
+	//printf("Hello\n");
 	if(test_should_have_deadlock())
 		printf("Passed\n");
 	printf("Done\n");
@@ -156,7 +154,9 @@ int main() {
 
     //int has_deadlock = graph_check_deadlock(&graph3);
     // Print results as needed
-    if(deadlock_detection(&graph3))
+	int test[2] = {-1, -1};
+	memcpy(test, deadlock_detection(&graph3, test), sizeof(test));
+    if(test[0] >= 0)
 		printf("Passed\n");
 	printf("Done\n");
 }

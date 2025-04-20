@@ -53,7 +53,7 @@ typedef struct {
 
 //Function to be called from the server periodically
 //Checks the graph for deadlocks, if there is one, resolves it and pre-empts the problem process of a resource
-int deadlock_detection(resource_alloc_graph_t *graph);
+int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array);
 
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph);
@@ -107,5 +107,5 @@ int *graph_detect_cycle(resource_alloc_graph_t *graph, bool *visited,
                        int visited_len, bool *recursed, int recursed_len,
                        int process_id, int *cycle_list, int offset);
 
-int resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list);
+int *resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list, int *output_array);
 #endif

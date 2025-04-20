@@ -6,7 +6,8 @@
  * Date: 4/4/2025
  * Description: Main program. Initializes shared resources, parses input files,
  * forks train processes, parses intersections.txt & trains.txt, cleans up.
- */
+ */ 
+#include "rag.h"
 #include "logger.h"
 #include "message.h"
 #include "parse.h"
@@ -116,8 +117,10 @@ void train_process(train_t *train) {
 // Current assumptions:
 // 1) find_intersection() exists
 // 2) if detect_deadlock() --> resolve_deadlock()
+
 void server_process() {
     // Initialize the Resource Allocation Graph
+	resource_alloc_graph_t rag;
     graph_init(&rag);
     for (int i = 0; i < shared_memory->num_trains; i++) {
 	graph_add_process(&rag, i);
@@ -197,10 +200,28 @@ void server_process() {
                     };
                     send_response(response_queue, resp_msg);
                     
-                    // TODO: Check for deadlocks
-                    if (detect_deadlock()) {
-                        resolve_deadlock();
-                    }
+                    //Detect deadlocks - will return [train, intersection] if a deadlock was found
+                    int output_array[2];
+					memcpy(output_array, detect_deadlock(&rag, output_array), sizeof(output_array));
+					
+					if(output_array[0] != -1) //checking if there is a deadlock
+					{
+						char message[1024];
+						train_t *problemTrain = shared_memory->trains[output_array[0]];
+						intersection_t *problemIntersection = shared_memory->intersections[output_array[1]];
+						
+						sprintf(message, "Preempting %s from %s", problemIntersection->name, problemTrain->name);
+						log_event(message);
+						
+						//attempt to release intersection from train
+						if(release_intersection(shared_memory->intersections[output_array[1]], shared_memory->trains[output_array[0]]))
+						{
+							//remove edge from graph
+							graph_remove_edge(&rag, output_array[0], output_array[1], 1);
+							sprintf= (message, "%s released %s forcibly.", problemTrain->name, problemIntersection->name);
+							log_event(message); 
+						}
+					}
                     ////////////////////
                 }
             } else if (req_msg.type == REQUEST_RELEASE) {
@@ -285,12 +306,6 @@ int main() {
     }
     else
         printf("parse completed without errors\n\n");
-    
-    
-    
-
-    
-    
 
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {

@@ -10,25 +10,20 @@
  *  resource allocation or requests Uses the graph to detect cycles within the
  *  trains
  */
- 
- 
- /*changes to delete */
- #include "../include/rag.h"
- 
- //plans today
- //change Detect cycle to output an array -done
- //put deadlock resolution code in - done
- //forcibly take resource from problem process
- //make sure to update message queu
- //make a function to do it all in 1 call from the server
- 
-//#include "rag.h"
+#include "rag.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "logger.h"
 
-//returns 1 if a deadlock was detected and corrected
-int deadlock_detection(resource_alloc_graph_t *graph){
+
+
+//EXTERNAL FUNCTIONS
+
+//detects and corrects deadlocks
+//returns the problem process and resource in an int array if a deadlock occured
+//returns [-1,-1] if no deadlock occured
+int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array){
 	
 	int cycle_list[] = {[0 ... MAX_PROCESSES] = -1};
 
@@ -36,20 +31,25 @@ int deadlock_detection(resource_alloc_graph_t *graph){
 	
 	if(cycle_list[0] >= 0)
 	{
-		printf("Deadlock Detection: Deadlock Detected\n");
-		printf("Cycle = [ ");
-		for(int i = 0; i < MAX_PROCESSES; i++)
+		char message[1024];
+		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0]);	
+		
+		// Send deadlock detected messages -> might get an error out of bounds, ill probably fix this just by increasing the cycle list tbh
+		int i = 2;
+		while(cycle_list[i] >= 0)
 		{
-			printf("%d, ", cycle_list[i]);
+			char addString[64];
+			sprintf(addString, "-> Train%d, ", cycle_list[i]);
+			strcat(message, addString);
+			i += 2;
 		}
-		printf("]\n");
-		
-		//MESSAGE -> DEADLOCK DETECTED
-		
-		if(resolve_deadlock(graph, cycle_list))
-			return 1;
+		log_event(message);
+		memcpy(output_array, resolve_deadlock(graph, cycle_list, output_array), sizeof(output_array));
+		return output_array;
 	}
-	return 0;
+	output_array[0] = -1;
+	output_array[1] = -1;
+	return output_array;
 }
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph) {
@@ -133,6 +133,14 @@ int graph_remove_request(
     }
     return 0;
 }
+
+
+
+
+
+
+//INTERNAL FUNCTIONS
+
 
 // Function that checks for cycles in a graph. If there is a cycle, it means the
 // possibility of a deadlocks If there is a cycle, it will spit out the first
@@ -233,7 +241,7 @@ void print_graph(resource_alloc_graph_t *graph) {
 }
 
 //finds the problem, announces it then deletes it. Returns false on an error
-int resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list)
+int *resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list, int *output_array)
 {
 	
 	int closest_process_id = 0;
@@ -262,7 +270,8 @@ int resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list)
 	//Its worth noting that there doesn't need to be any catches for getting a negative integer, because the first process will be repeated at the end of the list due to the cycle.
 	//This means that its impossible for index 0 to be the problem process, it will always be the last index in the cycle instead
 	int deadlock_fix[2] = {cycle_list[problem_process], cycle_list[problem_process - 1]};
-	printf("Problem Process: %d\n", deadlock_fix[0]);
-	printf("Problem Resource: %d\n", deadlock_fix[1]);
-	return 1;	
+	memcpy(output_array, deadlock_fix, sizeof(output_array));
+	//printf("Problem Process: %d\n", deadlock_fix[0]);
+	//printf("Problem Resource: %d\n", deadlock_fix[1]);
+	return output_array;	
 }
