@@ -69,7 +69,10 @@ void train_process(train_t *train) {
             log_event(log_message);
 
             // Sim travel time
-            sleep(2);
+            //sleep(2);
+
+            // I'm using this instead of sleep to show the delay in shared time
+            increment_sim_time(2)
 
             // Move to next position
             current_position++;
@@ -328,7 +331,16 @@ int main() {
     shm_id = shmget(key, sizeof(shared_memory_t),
                     IPC_CREAT | 0666);                         // Shared memory ID
     shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
-    log_file = fopen("simulation.log", "w");                   // Open simulation.log file
+    //log_file = fopen("simulation.log", "w");                   // Open simulation.log file
+
+    pthread_mutexattr_t attrb;
+    pthread_mutexattr_init(&attrb);
+    pthread_mutexattr_setpshared(&attrb, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(&shared_memory->time_mutex, &attrb);
+    shared_memory->sim_time = 0;
+
+    set_shared_time(shared_memory);
+    init_logger("simulation.log");
 
     // FIXME: Check that these directories work
     // Parse input file data into shared memory: intersections, trains, num_intersections,
@@ -362,7 +374,8 @@ int main() {
     }
 
     // Cleanup
-    fclose(log_file);
+    //fclose(log_file);
+    close_logger();
     shmdt(shared_memory);
     msgctl(msgq_id, IPC_RMID, NULL);
     shmctl(shm_id, IPC_RMID, NULL);
