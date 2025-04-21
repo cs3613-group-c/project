@@ -33,7 +33,7 @@ int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array){
 	if(cycle_list[0] >= 0)
 	{
 		char message[1024];
-		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0]);	
+		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0] + 1);	
 		
 		// Send deadlock detected messages -> might get an error out of bounds, ill probably fix this just by increasing the cycle list tbh
 		int i = 2;
