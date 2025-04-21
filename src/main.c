@@ -74,21 +74,6 @@ void train_process(train_t *train) {
 
             // Move to next position
             train->current_position++;
-
-            // If not at the end, release the intersection
-            if (train->current_position < train->route_len) {
-                // Send release request
-                message_t release_msg = {
-                    .type = REQUEST_RELEASE,
-                    .src = train->name,
-                    .dst = "SERVER",
-                    .data = {.release = intersection_name}};
-
-                sprintf(log_message, "%s: Released %s.", train->name, intersection_name);
-                log_event(log_message);
-
-                // Send message
-                send_request(shared_memory->request_queue, release_msg);
             }
         } else if (response.type == RESPONSE_WAIT) {
             sprintf(
@@ -124,8 +109,23 @@ void train_process(train_t *train) {
 
     // Train has completed its route
     sprintf(log_message, "%s: Completed route.", train->name);
-    log_event(log_message);
-
+	log_event(log_message);
+	
+	//Release all intersections
+	for(int i = 0; i < train->route_len; i++)
+	{
+		message_t release_msg = {
+                    .type = REQUEST_RELEASE,
+                    .src = train->name,
+                    .dst = "SERVER",
+                    .data = {.release = train->route[i]}};
+					
+					sprintf(log_message, "%s: Released %s.", train->name, intersection_name);
+					log_event(log_message);
+					
+					// Send message
+                send_request(shared_memory->request_queue, release_msg);
+	}
     exit(EXIT_SUCCESS);
 }
 
