@@ -345,6 +345,12 @@ message_queue_t *create_queue(size_t capacity) {
     return queue;
 }
 
+// Destroys the given message queue
+void destroy_queue(message_queue_t *queue) {
+    munmap(queue->items, queue->capacity * sizeof(message_t));
+    munmap(queue, sizeof(message_queue_t));
+}
+
 int main() {
     pid_t pid;
     key_t key = ftok(".", 'R');              // IPC Key
@@ -400,6 +406,8 @@ int main() {
     // Cleanup
     // fclose(log_file);
     close_logger();
+    destroy_queue(shared_memory->request_queue);
+    destroy_queue(shared_memory->response_queue);
     shmdt(shared_memory);
     msgctl(msgq_id, IPC_RMID, NULL);
     shmctl(shm_id, IPC_RMID, NULL);
