@@ -3,8 +3,10 @@
  *
  * Author: Erin Dunlap
  * Email: erin.dunlap10@okstate.edu
- * Date: 
- * Description:
+ * Date: 4/6/2025
+ * Description: file that creates and closes the log file as well as providing the log_event() function to be called
+ * so that we can log events based on special cases. logic for creating the simulated time and formatting the time are also added
+ * and allow for specialized increments of time (like if there is a delay).
  */
 #include "logger.h"
 #include <pthread.h>
