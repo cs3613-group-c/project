@@ -363,10 +363,11 @@ int main() {
     shared_memory->request_queue = create_queue(MAX_QUEUE_SIZE);
     shared_memory->response_queue = create_queue(MAX_QUEUE_SIZE);
 
-    pthread_mutexattr_t attrb;
-    pthread_mutexattr_init(&attrb);
-    pthread_mutexattr_setpshared(&attrb, PTHREAD_PROCESS_SHARED);
-    pthread_mutex_init(&shared_memory->time_mutex, &attrb);
+    // Allow the mutex to be used across processes
+    pthread_mutexattr_t attrs;
+    pthread_mutexattr_init(&attrs);
+    pthread_mutexattr_setpshared(&attrs, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(&shared_memory->time_mutex, &attrs);
     shared_memory->sim_time = 0;
 
     set_shared_time(shared_memory);
