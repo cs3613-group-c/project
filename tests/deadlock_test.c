@@ -1,10 +1,6 @@
 #include "rag.h"
-#include "logger.h"
-#include "test_runner.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <string.h> 
  
 #define PROCESS_COUNT 5

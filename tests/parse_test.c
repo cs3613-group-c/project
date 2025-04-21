@@ -1,6 +1,7 @@
 #include "constants.h"
 #include "parse.h"
 #include "structures.h"
+#include "test_runner.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <sys/ipc.h>
@@ -11,22 +12,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-
-
-int main() {
-    
-    
+bool test_should_parse_successfully() {
     parse_t ret = {{0}, 0, {0}, 0, 0};
     intersection_t sctns[MAX_INTERSECTIONS] = {0};
     train_t trains[MAX_TRAINS] = {0};
     int num_sctns = 0;
     int num_trains = 0;
-    
-    if(parse_file("input/intersections.txt", "input/trains.txt", sctns, trains, &num_sctns, &num_trains) > 0){
-        printf("parse completed with errors\n\n");
-    }
-    else
-        printf("parse completed without errors\n\n");
+
+    int errors = parse_file("input/intersections.txt", "input/trains.txt", sctns, trains, &num_sctns, &num_trains) > 0;
 
     //print intersection data
     for (int i = 0; i < num_sctns; i++) {
@@ -43,6 +36,13 @@ int main() {
     printf("route count: %d\nintersection count: %d\n\n", num_trains,
            num_sctns);
 
+    return errors == 0;
+}
+
+int main() {
+    test_data_t tests[] = {
+        (test_data_t){ .name = "Files parse successfully", .func = test_should_parse_successfully }
+    };
+    test_all(tests, sizeof(tests) / sizeof(test_data_t));
     return 0;
-    
-} // end main
+}
