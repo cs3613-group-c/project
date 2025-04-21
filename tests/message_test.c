@@ -123,7 +123,7 @@ int main() {
 
     for (int i = 0; i < CLIENT_COUNT; i++) {
         pid_t result = fork();
-        if (result != 0) {
+        if (result == 0) {
             // Run our clients based off our indices
             switch (i) {
             case 0: {
@@ -136,6 +136,7 @@ int main() {
                 client_c();
             } break;
             }
+            return 0;
         } else {
             // Store our PIDs in our parent's array
             clients[i] = result;

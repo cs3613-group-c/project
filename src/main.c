@@ -27,17 +27,12 @@ FILE *log_file;
 int msgq_id;
 int shm_id;
 
-
-
-int find_intersection(const char *inter_name)
-{
-	for(int i = 0; i < shared_memory->num_intersections; i++)
-	{
-		if(strcmp(inter_name, shared_memory->intersections[i].name))
-			return i;
-	}
+int find_intersection(const char *inter_name) {
+    for (int i = 0; i < shared_memory->num_intersections; i++) {
+        if (strcmp(inter_name, shared_memory->intersections[i].name))
+            return i;
+    }
 }
-
 
 void train_process(train_t *train) {
     int current_position = 0;
@@ -69,10 +64,10 @@ void train_process(train_t *train) {
             log_event(log_message);
 
             // Sim travel time
-            //sleep(2);
+            // sleep(2);
 
             // I'm using this instead of sleep to show the delay in shared time
-            increment_sim_time(2)
+            increment_sim_time(2);
 
             // Move to next position
             current_position++;
@@ -233,7 +228,7 @@ void server_process() {
                         train_t problem_train = shared_memory->trains[output_array[0]];
                         intersection_t *problem_intersection =
                             &shared_memory->intersections[output_array[1]];
-						const char *train_name = problem_train.name;
+                        const char *train_name = problem_train.name;
                         sprintf(
                             message,
                             "Preempting %s from %s",
@@ -242,12 +237,10 @@ void server_process() {
                         log_event(message);
 
                         // attempt to release intersection from train
-                        release_intersection(
-                                problem_intersection,
-                                problem_train.name); 
+                        release_intersection(problem_intersection, problem_train.name);
                         graph_remove_assignment(&rag, output_array[0], output_array[1], 1);
                         sprintf(
-							message,
+                            message,
                             "%s released %s forcibly.",
                             problem_train.name,
                             problem_intersection->name);
@@ -331,7 +324,7 @@ int main() {
     shm_id = shmget(key, sizeof(shared_memory_t),
                     IPC_CREAT | 0666);                         // Shared memory ID
     shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
-    //log_file = fopen("simulation.log", "w");                   // Open simulation.log file
+    // log_file = fopen("simulation.log", "w");                   // Open simulation.log file
 
     pthread_mutexattr_t attrb;
     pthread_mutexattr_init(&attrb);
@@ -357,6 +350,7 @@ int main() {
         printf("parse completed without errors\n\n");
 
     // Fork one process per train
+    // Author: Erin Dunlap
     for (int i = 0; i < shared_memory->num_trains; i++) {
         pid = fork();
         if (pid == 0) { // Child process (trains)
@@ -374,7 +368,7 @@ int main() {
     }
 
     // Cleanup
-    //fclose(log_file);
+    // fclose(log_file);
     close_logger();
     shmdt(shared_memory);
     msgctl(msgq_id, IPC_RMID, NULL);

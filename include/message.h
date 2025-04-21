@@ -16,6 +16,7 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <pthread.h>
 #include <stddef.h>
 
 /* The different types that our messages could be */
@@ -101,13 +102,15 @@ typedef struct {
 
     size_t head;
     size_t tail;
-} message_queue_t;
 
-/* Allocates a queue into our shared memory space */
-message_queue_t *queue_alloc();
+    pthread_mutex_t lock;
+} message_queue_t;
 
 /* Initializes a given queue */
 void queue_init(message_queue_t *queue);
+
+/* Deinitializes a given queue */
+void queue_deinit(message_queue_t *queue);
 
 /* Returns the first open index from the head or a negative value if it can't
  * find one */

@@ -14,6 +14,8 @@
  * the specifications right!
  */
 #include "message.h"
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,19 +37,20 @@ const char *message_type_name(message_type_t type) {
     }
 }
 
-message_queue_t *queue_alloc() {
-    // TODO: allocate a queue
-    message_queue_t *queue = NULL;
-    // Initialize our queue before returning it
-    queue_init(queue);
-    return queue;
-}
-
 void queue_init(message_queue_t *queue) {
     queue->head = 0;
     queue->tail = 0;
     queue->length = 0;
+
+    // setup attributes to make sure we can use the mutex across processes
+    pthread_mutexattr_t attrs;
+    pthread_mutexattr_init(&attrs);
+    pthread_mutexattr_setpshared(&attrs, PTHREAD_PROCESS_SHARED);
+    // initialize process
+    pthread_mutex_init(&queue->lock, &attrs);
 }
+
+void queue_deinit(message_queue_t *queue) { pthread_mutex_destroy(&queue->lock); }
 
 int queue_find_slot(message_queue_t *queue) {
     for (int i = queue->head; i < queue->length; i++) {
@@ -97,13 +100,7 @@ void send_request(message_queue_t *queue, message_t message) {
     }
 }
 
-void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, message_t message) {
-    // if we don't have a message to process, ignore it
-    if (req_queue->length <= 0 || queue_peek(req_queue).type == MESSAGE_OPEN_SLOT)
-        return;
-
-    message_t msg = queue_dequeue(req_queue);
-
+void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, message_t msg) {
     switch (msg.type) {
     case REQUEST_ACQUIRE:
         // TODO: Check for actual access via mutexes/semaphores
@@ -112,10 +109,10 @@ void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, mess
             (message_t){
                 .type = RESPONSE_GRANT,
                 .src = "SERVER",
-                .dst = message.src,
+                .dst = msg.src,
                 .data =
                     {
-                        .grant = message.data.acquire,
+                        .grant = msg.data.acquire,
                     },
             });
     case REQUEST_RELEASE:
@@ -126,10 +123,10 @@ void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, mess
             (message_t){
                 .type = RESPONSE_GRANT,
                 .src = "SERVER",
-                .dst = message.src,
+                .dst = msg.src,
                 .data =
                     {
-                        .grant = message.data.acquire,
+                        .grant = msg.data.acquire,
                     },
             });
 
@@ -148,30 +145,27 @@ void send_response(message_queue_t *queue, message_t message) {
     }
 }
 
-void handle_response(message_queue_t *queue, message_t message) {
+void handle_response(message_queue_t *queue, message_t msg) {
     // if we don't have a message to process, ignore it
     if (queue->length <= 0)
         return;
-
-    message_t msg = queue_dequeue(queue);
-
     // TODO: properly link this with our intersections
     switch (msg.type) {
     case RESPONSE_GRANT:
         printf(
             "[CLIENT %s: INFO] Server has granted client access to "
             "intersection",
-            message.dst);
+            msg.dst);
     case RESPONSE_WAIT:
-        printf("[CLIENT %s: INFO] Server told client to wait for intersection", message.dst);
+        printf("[CLIENT %s: INFO] Server told client to wait for intersection", msg.dst);
         break;
     case RESPONSE_DENY:
-        printf("[CLIENT %s: WARN] Server was denied access to intersection", message.dst);
+        printf("[CLIENT %s: WARN] Server was denied access to intersection", msg.dst);
         break;
     default:
         printf(
             "[CLIENT %s: WARN] RECEIVED UNHANDLED MESSAGE: %s",
-            message.dst,
+            msg.dst,
             message_type_name(msg.type));
         break;
     }
