@@ -221,10 +221,7 @@ void server_process() {
 
                     // Detect deadlocks - will return [train, intersection] if a deadlock was found
                     int output_array[2];
-                    memcpy(
-                        output_array,
-                        deadlock_detection(&rag, output_array),
-                        sizeof(output_array));
+                    deadlock_detection(&rag, output_array); 
 
                     if (output_array[0] != -1) // checking if there is a deadlock
                     {
