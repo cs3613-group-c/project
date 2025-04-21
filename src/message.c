@@ -65,7 +65,7 @@ int queue_find_slot(message_queue_t *queue) {
 
 int queue_enqueue(message_queue_t *queue, message_t msg) {
     // Acquire a lock before we do anything
-    pthread_mutex_lock(&queue->lock);
+    // pthread_mutex_lock(&queue->lock);
     // TODO:  We should add error types to properly handle any issues that occur
     // In this case, we should wait for an open position before adding the
     // message
@@ -80,12 +80,12 @@ int queue_enqueue(message_queue_t *queue, message_t msg) {
     queue->tail = (queue->tail + 1) % queue->capacity;
     queue->length++;
     // Unlock after we've done our modifications
-    pthread_mutex_unlock(&queue->lock);
+    // pthread_mutex_unlock(&queue->lock);
     return 0;
 }
 
 message_t queue_dequeue(message_queue_t *queue) {
-    pthread_mutex_lock(&queue->lock);
+    // pthread_mutex_lock(&queue->lock);
     message_t msg = queue->items[queue->head];
     // Designate our slot as open by setting its data to the default open slot
     // struct
@@ -94,7 +94,7 @@ message_t queue_dequeue(message_queue_t *queue) {
     size_t next_index = (queue->head + 1) % queue->capacity;
     queue->head = next_index;
     queue->length--;
-    pthread_mutex_unlock(&queue->lock);
+    // pthread_mutex_unlock(&queue->lock);
     return msg;
 }
 
@@ -112,7 +112,6 @@ void send_response(message_queue_t *queue, message_t message) {
         // TODO: handle errors
     }
 }
-
 message_t wait_for_response(message_queue_t *queue, const char *dst) {
     // waits for the queue to process its message before returning the response
     while (queue->length <= 0 || strcmp(queue_peek(queue).dst, dst) != 0) {

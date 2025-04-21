@@ -302,14 +302,14 @@ void server_process() {
             send_response(shared_memory->response_queue, resp_msg);
 
             // Check if train has completed its route
-            int completed = 1;
+            bool completed = true;
             for (int i = 0; i < shared_memory->num_trains; i++) {
                 if (strcmp(shared_memory->trains[i].name, train_name) == 0) {
-                    if (shared_memory->trains[i].current_position >=
+                    if (shared_memory->trains[i].current_position >
                         shared_memory->trains[i].route_len) {
                         trains_completed++;
                     } else {
-                        completed = 0;
+                        completed = false;
                     }
                     break;
                 }
