@@ -73,8 +73,7 @@ void train_process(train_t *train) {
             increment_sim_time(2);
 
             // Move to next position
-            train->current_position++;
-            }
+            train->current_position++; 
         } else if (response.type == RESPONSE_WAIT) {
             sprintf(
                 log_message,
@@ -109,23 +108,23 @@ void train_process(train_t *train) {
 
     // Train has completed its route
     sprintf(log_message, "%s: Completed route.", train->name);
-	log_event(log_message);
-	
-	//Release all intersections
-	for(int i = 0; i < train->route_len; i++)
-	{
-		message_t release_msg = {
-                    .type = REQUEST_RELEASE,
-                    .src = train->name,
-                    .dst = "SERVER",
-                    .data = {.release = train->route[i]}};
-					
-					sprintf(log_message, "%s: Released %s.", train->name, intersection_name);
-					log_event(log_message);
-					
-					// Send message
-                send_request(shared_memory->request_queue, release_msg);
-	}
+    log_event(log_message);
+
+    //Release all intersections
+    for(int i = 0; i < train->route_len; i++)
+    {
+        message_t release_msg = {
+            .type = REQUEST_RELEASE,
+            .src = train->name,
+            .dst = "SERVER",
+            .data = {.release = train->route[i]}};
+
+        sprintf(log_message, "%s: Released %s.", train->name, train->route[i] );
+        log_event(log_message);
+
+        // Send message
+        send_request(shared_memory->request_queue, release_msg);
+    }
     exit(EXIT_SUCCESS);
 }
 
@@ -304,7 +303,7 @@ void server_process() {
             for (int i = 0; i < shared_memory->num_trains; i++) {
                 if (strcmp(shared_memory->trains[i].name, train_name) == 0) {
                     train_t train = shared_memory->trains[i];
-                    if (train.current_position >= train.route_len - 1) {
+                    if (train.current_position >= train.route_len) {
                         trains_completed++;
                     }
                     break;
@@ -369,12 +368,12 @@ int main() {
     init_logger("simulation.log");
 
     parse_file(
-            "input/intersections.txt",
-            "input/trains.txt",
-            shared_memory->intersections,
-            shared_memory->trains,
-            &shared_memory->num_intersections,
-            &shared_memory->num_trains);
+        "input/intersections.txt",
+        "input/trains.txt",
+        shared_memory->intersections,
+        shared_memory->trains,
+        &shared_memory->num_intersections,
+        &shared_memory->num_trains);
     //exiting for bad exit codes handled internally
 
     // Logging the initialized intersections
@@ -386,7 +385,7 @@ int main() {
         snprintf(buffer, sizeof(buffer), "- %s (%s, Capacity=%d)", inter->name, type_str, inter->capacity);
         log_event(buffer);
     }
-    
+
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
         int pid = fork();
