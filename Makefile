@@ -40,7 +40,6 @@ logger_test: src/logger.o tests/test_runner.o tests/logger_test.o
 	@$(CC) -o output/logger_test src/logger.o tests/test_runner.o tests/logger_test.o
 	@./output/logger_test
 
-
 table_test: src/table.o src/parse.o tests/test_runner.o tests/table_test.o
 	@mkdir -p output
 	@$(CC) -o output/table_test src/table.o tests/test_runner.o tests/table_test.o src/parse.o
