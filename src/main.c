@@ -223,7 +223,7 @@ void server_process() {
                     int output_array[2];
                     memcpy(
                         output_array,
-                        graph_deadlock_detection(&rag, output_array),
+                        deadlock_detection(&rag, output_array),
                         sizeof(output_array));
 
                     if (output_array[0] != -1) // checking if there is a deadlock
@@ -330,19 +330,14 @@ message_queue_t *create_queue(size_t capacity) {
         MAP_SHARED | MAP_ANONYMOUS,
         -1,
         0);
-    printf("MMAP SUCCEEDED: %p\n", items);
 
     // Create a separate mapping in memory for our actual queue
     message_queue_t *queue = mmap(
         NULL, sizeof(message_queue_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    printf("QUEUE SUCCEEDED: %p\n", queue);
-
     memset(items, capacity, MESSAGE_OPEN_SLOT);
-    printf("MEMSET SUCCEEDED\n");
 
     // Initialize our queue data
     queue_init(queue);
-    printf("queue_init SUCCEEDED\n");
 
     // Initialize items & capacity of queue
     queue->items = items;
@@ -391,7 +386,7 @@ int main() {
     log_event("SERVER: Initialized intersections:");    
     for(int i = 0; i < shared_memory->num_intersections; i++) {
         intersection_t *inter = &shared_memory->intersections[i];
-        const char *type_str = (inter->type == INTERSECTION_MUTEX) ? "Mutex" : "Semaphore";
+        const char *type_str = (inter->lock_type == LOCK_MUTEX) ? "Mutex" : "Semaphore";
         char buffer[MAX_LOG_SIZE];
         snprintf(buffer, sizeof(buffer), "- %s (%s, Capacity=%d)", inter->name, type_str, inter->capacity);
         log_event(buffer);
