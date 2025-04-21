@@ -9,10 +9,11 @@ run: train_simulation
 	./train_simulation
 
 train_simulation: $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o train_simulation
+	echo $(CC)
+	$(CC) $(CFLAGS) $(OBJS) -g -o train_simulation
 
 %.o: %.c $(DEPS)
-	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INCLUDES) -g -c -o $@ $<
 
 # TODO: Grab all output binaries?
 clean:

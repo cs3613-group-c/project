@@ -1,8 +1,8 @@
 /*
  * Group C
  *
- * Author: Drake Geeteh
- * Email: drake.geeteh@okstate.edu
+ * Authors: Cade Blakeman, Gabe Cornelius, Erin Dunlap, Drake Geeteh, Em Jordan
+ * Email: cade.blakeman@okstate.edu, gabriel.xxx.cornelius@okstate.edu, erin.dunlap10@okstate.edu, em.jordan@okstate.edu
  * Date: 4/4/2025
  * Description: Main program. Initializes shared resources, parses input files,
  * forks train processes, parses intersections.txt & trains.txt, cleans up.
@@ -25,18 +25,19 @@
 
 #define MAX_QUEUE_SIZE 100
 
+// Global reference to our mapped memory, used for state management and IPC
 shared_memory_t *shared_memory;
-FILE *log_file;
-int msgq_id;
-int shm_id;
 
+// Attempts to find an intersection by the given name
 int find_intersection(const char *inter_name) {
     for (int i = 0; i < shared_memory->num_intersections; i++) {
         if (strcmp(inter_name, shared_memory->intersections[i].name))
             return i;
     }
+    return -1;
 }
 
+// The child process used for simulating our train movement
 void train_process(train_t *train) {
     int current_position = 0;
     char log_message[MAX_LOG_SIZE];
@@ -329,19 +330,24 @@ message_queue_t *create_queue(size_t capacity) {
         MAP_SHARED | MAP_ANONYMOUS,
         -1,
         0);
+    printf("MMAP SUCCEEDED: %p\n", items);
 
     // Create a separate mapping in memory for our actual queue
     message_queue_t *queue = mmap(
         NULL, sizeof(message_queue_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    printf("QUEUE SUCCEEDED: %p\n", queue);
 
     memset(items, capacity, MESSAGE_OPEN_SLOT);
+    printf("MEMSET SUCCEEDED\n");
 
     // Initialize our queue data
     queue_init(queue);
+    printf("queue_init SUCCEEDED\n");
 
     // Initialize items & capacity of queue
     queue->items = items;
     queue->capacity = capacity;
+
     return queue;
 }
 
@@ -352,13 +358,9 @@ void destroy_queue(message_queue_t *queue) {
 }
 
 int main() {
-    pid_t pid;
-    key_t key = ftok(".", 'R');              // IPC Key
-    msgq_id = msgget(key, IPC_CREAT | 0666); // Message queue ID
-    int req_queue_id = shmget(key, sizeof(message_t), IPC_CREAT | 0666);
-    shm_id = shmget(key, sizeof(shared_memory_t),
-                    IPC_CREAT | 0666);                         // Shared memory ID
-    shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
+    shared_memory = mmap(
+        NULL, sizeof(shared_memory_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
 
     shared_memory->request_queue = create_queue(MAX_QUEUE_SIZE);
     shared_memory->response_queue = create_queue(MAX_QUEUE_SIZE);
@@ -390,7 +392,7 @@ int main() {
 
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
-        pid = fork();
+        int pid = fork();
         if (pid == 0) { // Child process (trains)
             train_process(&shared_memory->trains[i]);
             exit(EXIT_SUCCESS);
@@ -405,13 +407,12 @@ int main() {
         wait(NULL);
     }
 
-    // Cleanup
-    // fclose(log_file);
+    // Cleanup our resources
     close_logger();
+    // Destroy our message queues used for IPC
     destroy_queue(shared_memory->request_queue);
     destroy_queue(shared_memory->response_queue);
-    shmdt(shared_memory);
-    msgctl(msgq_id, IPC_RMID, NULL);
-    shmctl(shm_id, IPC_RMID, NULL);
+    // Destroy our state after we've done everything else
+    munmap(shared_memory, sizeof(shared_memory_t));
     return 0;
 }
