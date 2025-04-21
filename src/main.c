@@ -383,9 +383,10 @@ int main() {
             shared_memory->trains,
             &shared_memory->num_intersections,
             &shared_memory->num_trains) > 0) {
-        printf("parse completed with errors\n\n");
+        printf("Parsing completed with errors\n\n");
+        return -1;
     } else
-        printf("parse completed without errors\n\n");
+        printf("Parsing completed without errors\n\n");
 
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
