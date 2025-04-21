@@ -4,7 +4,7 @@
  * Name: Em Jordan
  * Email: em.jordan@okstate.edu
  * Date: 4/17/2025
- * Description: A small header used to run a suite of tests on
+ * Description: A small header used to run a suite of tests on our codebase
  */
 #ifndef TEST_RUNNER_H
 

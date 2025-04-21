@@ -12,7 +12,6 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-#include "constants.h"
 #include "structures.h"
 
 int parse_file(
