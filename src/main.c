@@ -223,7 +223,7 @@ void server_process() {
                     int output_array[2];
                     memcpy(
                         output_array,
-                        graph_check_deadlock(&rag, output_array),
+                        graph_deadlock_detection(&rag, output_array),
                         sizeof(output_array));
 
                     if (output_array[0] != -1) // checking if there is a deadlock

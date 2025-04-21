@@ -10,15 +10,49 @@
  *  resource allocation or requests Uses the graph to detect cycles within the
  *  trains
  */
+#include "logger.h"
 #include "rag.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "logger.h"
 
 
 
 //EXTERNAL FUNCTIONS
+
+//detects and corrects deadlocks
+//returns the problem process and resource in an int array if a deadlock occured
+//returns [-1,-1] if no deadlock occured
+int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array){
+	
+	//FIX -> cycle list needs to be bigger everywhere. Should be (Max processes * 2)
+	int cycle_list[] = {[0 ... MAX_PROCESSES * 2] = -1};
+
+	memcpy(cycle_list, graph_check_deadlock(graph, cycle_list), sizeof(cycle_list));
+	
+	if(cycle_list[0] >= 0)
+	{
+		char message[1024];
+		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0]);	
+		
+		// Send deadlock detected messages -> might get an error out of bounds, ill probably fix this just by increasing the cycle list tbh
+		int i = 2;
+		while(cycle_list[i] >= 0)
+		{
+			char addString[64];
+			sprintf(addString, "-> Train%d, ", cycle_list[i]);
+			strcat(message, addString);
+			i += 2;
+		}
+		log_event(message);
+		memcpy(output_array, resolve_deadlock(graph, cycle_list, output_array), sizeof(output_array));
+		return output_array;
+	}
+	output_array[0] = -1;
+	output_array[1] = -1;
+	return output_array;
+}
+
 
 // Initializes the data in our graph to default values
 void graph_init(resource_alloc_graph_t *graph) {
@@ -101,39 +135,6 @@ int graph_remove_request(
         return -1;
     }
     return 0;
-}
-
-
-//detects and corrects deadlocks
-//returns the problem process and resource in an int array if a deadlock occured
-//returns [-1,-1] if no deadlock occured
-int *deadlock_detection(resource_alloc_graph_t *graph, int *output_array){
-	
-	int cycle_list[] = {[0 ... MAX_PROCESSES] = -1};
-
-	memcpy(cycle_list, graph_check_deadlock(graph, cycle_list), sizeof(cycle_list));
-	
-	if(cycle_list[0] >= 0)
-	{
-		char message[1024];
-		sprintf(message, "Deadlock Detected! Cycle: Train%d", cycle_list[0]);	
-		
-		// Send deadlock detected messages -> might get an error out of bounds, ill probably fix this just by increasing the cycle list tbh
-		int i = 2;
-		while(cycle_list[i] >= 0)
-		{
-			char addString[64];
-			sprintf(addString, "-> Train%d, ", cycle_list[i]);
-			strcat(message, addString);
-			i += 2;
-		}
-		log_event(message);
-		memcpy(output_array, resolve_deadlock(graph, cycle_list, output_array), sizeof(output_array));
-		return output_array;
-	}
-	output_array[0] = -1;
-	output_array[1] = -1;
-	return output_array;
 }
 
 //INTERNAL FUNCTIONS
@@ -220,7 +221,7 @@ int *resolve_deadlock(resource_alloc_graph_t *graph, int *cycle_list, int *outpu
 	int closest_processes = 0;
 	
 	//Find process closest to completion
-	for(int i = 0; i < MAX_PROCESSES; i += 2)
+	for(int i = 0; i < MAX_PROCESSES * 2; i += 2)
 	{
 		process_t *process = &graph->processes[i];
 		int requested_resources = 0;
