@@ -19,30 +19,30 @@ bool test_should_parse_successfully() {
     int num_sctns = 0;
     int num_trains = 0;
 
-    int errors = parse_file("input/intersections.txt", "input/trains.txt", sctns, trains, &num_sctns, &num_trains) > 0;
+    int errors =
+        parse_file(
+            "input/intersections.txt", "input/trains.txt", sctns, trains, &num_sctns, &num_trains) >
+        0;
 
-    //print intersection data
+    // print intersection data
     for (int i = 0; i < num_sctns; i++) {
-         intersection_print_status(&sctns[i]);
-        
+        intersection_print_status(&sctns[i]);
     }
-    
-    //print train data
-    for (int i = 0; i < num_trains; i++) {
-       train_print_status(&trains[i]);
-    }
-        printf("\n\n");
 
-    printf("route count: %d\nintersection count: %d\n\n", num_trains,
-           num_sctns);
+    // print train data
+    for (int i = 0; i < num_trains; i++) {
+        train_print_status(&trains[i]);
+    }
+    printf("\n\n");
+
+    printf("route count: %d\nintersection count: %d\n\n", num_trains, num_sctns);
 
     return errors == 0;
 }
 
 int main() {
     test_data_t tests[] = {
-        (test_data_t){ .name = "Files parse successfully", .func = test_should_parse_successfully }
-    };
+        (test_data_t){.name = "Files parse successfully", .func = test_should_parse_successfully}};
     test_all(tests, sizeof(tests) / sizeof(test_data_t));
     return 0;
 }
