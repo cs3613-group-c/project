@@ -1,3 +1,12 @@
+/*
+ * Group C
+ *
+ * Authors: Cade Blakeman, Em Jordan
+ * Date:
+ * Description:
+ *  - Tests 3 deadlock tests & their resolution for preemption
+ *
+ */
 #include "rag.h"
 #include <stdbool.h>
 #include <stdio.h>
