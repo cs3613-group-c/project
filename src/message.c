@@ -64,10 +64,13 @@ int queue_find_slot(message_queue_t *queue) {
 }
 
 int queue_enqueue(message_queue_t *queue, message_t msg) {
+    // Acquire a lock before we do anything
+    pthread_mutex_lock(&queue->lock);
     // TODO:  We should add error types to properly handle any issues that occur
     // In this case, we should wait for an open position before adding the
     // message
     if (queue->length >= queue->capacity) {
+        pthread_mutex_unlock(&queue->lock);
         return -1;
     }
 
@@ -76,10 +79,13 @@ int queue_enqueue(message_queue_t *queue, message_t msg) {
     // Update our tail & length
     queue->tail = (queue->tail + 1) % queue->capacity;
     queue->length++;
+    // Unlock after we've done our modifications
+    pthread_mutex_unlock(&queue->lock);
     return 0;
 }
 
 message_t queue_dequeue(message_queue_t *queue) {
+    pthread_mutex_lock(&queue->lock);
     message_t msg = queue->items[queue->head];
     // Designate our slot as open by setting its data to the default open slot
     // struct
@@ -88,6 +94,7 @@ message_t queue_dequeue(message_queue_t *queue) {
     size_t next_index = (queue->head + 1) % queue->capacity;
     queue->head = next_index;
     queue->length--;
+    pthread_mutex_unlock(&queue->lock);
     return msg;
 }
 
@@ -100,74 +107,9 @@ void send_request(message_queue_t *queue, message_t message) {
     }
 }
 
-void handle_request(message_queue_t *req_queue, message_queue_t *res_queue, message_t msg) {
-    switch (msg.type) {
-    case REQUEST_ACQUIRE:
-        // TODO: Check for actual access via mutexes/semaphores
-        send_response(
-            res_queue,
-            (message_t){
-                .type = RESPONSE_GRANT,
-                .src = "SERVER",
-                .dst = msg.src,
-                .data =
-                    {
-                        .grant = msg.data.acquire,
-                    },
-            });
-    case REQUEST_RELEASE:
-        // TODO: Do we need to send a response for this? We'll set it as
-        // granting anyway but
-        send_response(
-            res_queue,
-            (message_t){
-                .type = RESPONSE_GRANT,
-                .src = "SERVER",
-                .dst = msg.src,
-                .data =
-                    {
-                        .grant = msg.data.acquire,
-                    },
-            });
-
-        break;
-    default:
-        // TODO: Should we return an error for unhandled messages?
-        // ("[WARNING] RECEIVED UNHANDLED MESSAGE: %s",
-        // message_type_name(msg.type));
-        break;
-    }
-}
-
 void send_response(message_queue_t *queue, message_t message) {
     if (queue_enqueue(queue, message) != 0) {
         // TODO: handle errors
-    }
-}
-
-void handle_response(message_queue_t *queue, message_t msg) {
-    // if we don't have a message to process, ignore it
-    if (queue->length <= 0)
-        return;
-    // TODO: properly link this with our intersections
-    switch (msg.type) {
-    case RESPONSE_GRANT:
-        printf(
-            "[CLIENT %s: INFO] Server has granted client access to "
-            "intersection",
-            msg.dst);
-    case RESPONSE_WAIT:
-        printf("[CLIENT %s: INFO] Server told client to wait for intersection", msg.dst);
-        break;
-    case RESPONSE_DENY:
-        printf("[CLIENT %s: WARN] Server was denied access to intersection", msg.dst);
-        break;
-    default:
-        printf(
-            "[CLIENT %s: WARN] RECEIVED UNHANDLED MESSAGE: %s",
-            msg.dst,
-            message_type_name(msg.type));
-        break;
     }
 }
 

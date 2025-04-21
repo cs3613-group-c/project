@@ -48,7 +48,6 @@ typedef struct {
 } intersection_t;
 
 typedef struct {
-
     char name[MAX_NAME_LENGTH];
     char route[MAX_ROUTE_LENGTH][MAX_NAME_LENGTH];
     int route_len;
