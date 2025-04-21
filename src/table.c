@@ -4,7 +4,7 @@
  * Author: Gabe Cornelius
  * Email: gabriel.j.cornelius@okstate.edu
  * Date: 4/6/2025
- * Description:
+ * Description: Resource allocation table methods to appropriately add and remove items from the structs
  */
 #include "table.h"
 #include "structures.h"

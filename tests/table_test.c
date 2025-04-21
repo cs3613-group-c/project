@@ -2,8 +2,9 @@
 //  Author: Gabe Cornelius
 //  Email: gabriel.j.cornelius@okstate.edu
 //  Date: 4/20/2025
-//  Description: 
+//  Description: Test for table function, ensuring correct operation
 //
+
 
 #include "parse.h"
 #include "structures.h"
