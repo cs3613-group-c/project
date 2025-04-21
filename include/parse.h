@@ -25,4 +25,5 @@ int parse_file(
 
 void train_print_status(train_t *train);
 void intersection_print_status(intersection_t *sctn);
+void parse_errors(int error);
 #endif

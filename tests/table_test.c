@@ -1,7 +1,9 @@
 //  Group C
 //  Author: Gabe Cornelius
 //  Email: gabriel.j.cornelius@okstate.edu
-//  Date: 4/6/2025
+//  Date: 4/20/2025
+//  Description: 
+//
 
 #include "parse.h"
 #include "structures.h"
@@ -45,37 +47,6 @@ int main(){
 	intersection_print_status(&m->intersections[0]);
 	
 	train_print_status(&m->trains[0]);
-	//FIXME: change to appropriate call
-	// table_init(m, input);
-	
-	// printf("num_trains: %d\n", mem->num_trains);
-	/* 
- 	for(int i = 0; i < mem->num_intersections; i++){
-		printf("Intersection %c sctn_is_locked: %d\n",i + 'A',table_is_sctn_locked(i));
-	}
-	*/
-
-	/* 
-	for(int i = 0, j = 0; j < 20; i = (i+1)%5, j++){
-		
-		table_sctn_add_train(i, 0);
-		table_sctn_add_train(i, 1);
-		printf("Intersection %c num_holding_trains: %d\n",i + 'A',(*m).intersections[i].num_holding_trains);
-		table_sctn_rem_train(i, 0);
-		printf("Intersection %c num_holding_trains: %d\n",i + 'A',(*m).intersections[i].num_holding_trains);
-	
-	}
-	*/
-
-	// table_sctn_add_train(0, 0);
-	// table_sctn_add_train(0, 1);
-	// table_sctn_add_train(0, 1);
-	// table_sctn_add_train(0, 2);
-	// printf("Intersection %c num_holding_trains: %d\n",0 + 'A',(*m).intersections[0].num_holding_trains);
-	
-	// printf("Intersection %c num_holding_trains: %d\n",0 + 'A',(*m).intersections[0].num_holding_trains);
-		
-	// table_print();
 	
 	munmap(m, sizeof(shared_memory_t));	
 	

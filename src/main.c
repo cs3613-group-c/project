@@ -378,18 +378,15 @@ int main() {
     // FIXME: Check that these directories work
     // Parse input file data into shared memory: intersections, trains, num_intersections,
     // num_trains
-    if (parse_file(
+    parse_file(
             "input/intersections.txt",
             "input/trains.txt",
             shared_memory->intersections,
             shared_memory->trains,
             &shared_memory->num_intersections,
-            &shared_memory->num_trains) > 0) {
-        printf("Parsing completed with errors\n\n");
-        return -1;
-    } else
-        printf("Parsing completed without errors\n\n");
-
+            &shared_memory->num_trains);
+    //exiting for bad exit codes handled internally
+    
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
         int pid = fork();
