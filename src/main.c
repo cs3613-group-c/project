@@ -39,12 +39,11 @@ int find_intersection(const char *inter_name) {
 
 // The child process used for simulating our train movement
 void train_process(train_t *train) {
-    int current_position = 0;
     char log_message[MAX_LOG_SIZE];
 
-    while (current_position < train->route_len) {
+    while (train->current_position < train->route_len - 1) {
         // Current intersection to acquire
-        char *intersection_name = train->route[current_position];
+        char *intersection_name = train->route[train->current_position];
 
         // Send acquire request
         message_t request_msg = {
@@ -74,10 +73,10 @@ void train_process(train_t *train) {
             increment_sim_time(2);
 
             // Move to next position
-            current_position++;
+            train->current_position++;
 
             // If not at the end, release the intersection
-            if (current_position < train->route_len) {
+            if (train->current_position < train->route_len) {
                 // Send release request
                 message_t release_msg = {
                     .type = REQUEST_RELEASE,
@@ -302,22 +301,14 @@ void server_process() {
             send_response(shared_memory->response_queue, resp_msg);
 
             // Check if train has completed its route
-            bool completed = true;
             for (int i = 0; i < shared_memory->num_trains; i++) {
                 if (strcmp(shared_memory->trains[i].name, train_name) == 0) {
-                    if (shared_memory->trains[i].current_position >
-                        shared_memory->trains[i].route_len) {
+                    train_t train = shared_memory->trains[i];
+                    if (train.current_position >= train.route_len - 1) {
                         trains_completed++;
-                    } else {
-                        completed = false;
                     }
                     break;
                 }
-            }
-
-            if (completed) {
-                sprintf(log_message, "%s: Completed route.", train_name);
-                log_event(log_message);
             }
         }
     }
