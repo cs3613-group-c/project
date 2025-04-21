@@ -7,6 +7,7 @@ This is the official repository for the Group C's implementation of CS3613's pro
 Our testing suite consists of several tests for the modules in our codebase. Below is a list of the different tests in `Makefile` command form:
 
 ```sh
+make train_simulation # Runs our main train simulation
 make message_test # IPC / message passing test
 make deadlock_test # Deadlock
 make parse_test # Parser verification for our input files
