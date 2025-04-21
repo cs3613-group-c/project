@@ -32,8 +32,8 @@ typedef struct {
     intersection_lock_t *lock_data;
     char holding_trains[MAX_TRAINS][MAX_NAME_LENGTH]; //*1 this array is not strictly contiguous
                                                       //   each index corresponds to a certain train
-                                                      //   this is to ensure random access and prevent 
-                                                      //   one train overwriting another
+                                                      //   this is to ensure random access and
+                                                      //   prevent one train overwriting another
                                                       //   train 1 is index 0
 
     bool table_holding_trains[MAX_TRAINS]; // Boolean initialized to zero, to
@@ -41,10 +41,10 @@ typedef struct {
                                            // are held
                                            // FIXME: delete when feasible
     int num_holding_trains;
-    
-    char waiting_trains[MAX_TRAINS][MAX_NAME_LENGTH]; //See *1
+
+    char waiting_trains[MAX_TRAINS][MAX_NAME_LENGTH]; // See *1
     bool is_locked;
-    int index; //Train 1 = index 0
+    int index; // Train 1 = index 0
 } intersection_t;
 
 typedef struct {
@@ -53,15 +53,15 @@ typedef struct {
     char route[MAX_ROUTE_LENGTH][MAX_NAME_LENGTH];
     int route_len;
     int current_position;
-    
-    char holding_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH]; //see *1
-    char waiting_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH]; //see *1
-    int index; //Intersection A = index 0
+
+    char holding_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH]; // see *1
+    char waiting_intersections[MAX_INTERSECTIONS][MAX_NAME_LENGTH]; // see *1
+    int index;                                                      // Intersection A = index 0
 } train_t;
 
-typedef struct { //FIXME: make parse_file into a void method and delete this struct
-    int routes[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count,
-        sctn[MAX_ROUTE_LENGTH], sctn_count, error;
+typedef struct { // FIXME: make parse_file into a void method and delete this struct
+    int routes[MAX_TRAINS][MAX_ROUTE_LENGTH], route_count, sctn[MAX_ROUTE_LENGTH], sctn_count,
+        error;
 } parse_t;
 
 typedef struct {
@@ -71,8 +71,8 @@ typedef struct {
     int num_trains;
     pthread_mutex_t time_mutex;
     int sim_time;
-    message_queue_t request_queue;
-    message_queue_t response_queue;
+    message_queue_t *request_queue;
+    message_queue_t *response_queue;
 } shared_memory_t;
 
 #endif

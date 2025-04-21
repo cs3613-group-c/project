@@ -101,5 +101,5 @@ void log_event(const char *format, ...) {
     fflush(log_file); // Implementing to immediately write to file
 
     // Printing to the terminal to make it easier for testing purposes
-    printf("%s %s\n", timestamp, message);
+    // printf("%s %s\n", get_formatted_sim_time(), message);
 }

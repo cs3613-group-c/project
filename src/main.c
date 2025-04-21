@@ -17,10 +17,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ipc.h>
+#include <sys/mman.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#define MAX_QUEUE_SIZE 100
 
 shared_memory_t *shared_memory;
 FILE *log_file;
@@ -53,10 +56,10 @@ void train_process(train_t *train) {
         log_event(log_message);
 
         // Send message
-        send_request(&shared_memory->request_queue, request_msg);
+        send_request(shared_memory->request_queue, request_msg);
 
         // Wait for response
-        message_t response = wait_for_response(&shared_memory->response_queue, train->name);
+        message_t response = wait_for_response(shared_memory->response_queue, train->name);
 
         // Check response type
         if (response.type == RESPONSE_GRANT) {
@@ -85,7 +88,7 @@ void train_process(train_t *train) {
                 log_event(log_message);
 
                 // Send message
-                send_request(&shared_memory->request_queue, release_msg);
+                send_request(shared_memory->request_queue, release_msg);
             }
         } else if (response.type == RESPONSE_WAIT) {
             sprintf(
@@ -146,9 +149,9 @@ void server_process() {
 
     while (trains_completed < shared_memory->num_trains) {
         // Process request if any
-        if (shared_memory->request_queue.length > 0) {
+        if (shared_memory->request_queue->length > 0) {
             // Dequeue the message
-            message_t req_msg = queue_dequeue(&shared_memory->request_queue);
+            message_t req_msg = queue_dequeue(shared_memory->request_queue);
 
             // Check request type
             if (req_msg.type == REQUEST_ACQUIRE) {
@@ -193,7 +196,7 @@ void server_process() {
                         .src = "SERVER",
                         .dst = train_name,
                         .data = {.grant = intersection_name}};
-                    send_response(&shared_memory->response_queue, resp_msg);
+                    send_response(shared_memory->response_queue, resp_msg);
                 } else {
                     // Could not acquire the intersection
                     char state_str[MAX_LOG_SIZE / 2]; // Use half the log message size for state
@@ -213,7 +216,7 @@ void server_process() {
                         .src = "SERVER",
                         .dst = train_name,
                         .data = {.wait = NULL}};
-                    send_response(&shared_memory->response_queue, resp_msg);
+                    send_response(shared_memory->response_queue, resp_msg);
 
                     // Detect deadlocks - will return [train, intersection] if a deadlock was found
                     int output_array[2];
@@ -287,7 +290,7 @@ void server_process() {
                     .src = "SERVER",
                     .dst = train_name,
                     .data = {.grant = intersection_name}};
-                send_response(&shared_memory->response_queue, resp_msg);
+                send_response(shared_memory->response_queue, resp_msg);
 
                 // Check if train has completed its route
                 int completed = 1;
@@ -315,16 +318,44 @@ void server_process() {
     sprintf(log_message, "SIMULATION COMPLETE. All trains reached destinations.");
     log_event(log_message);
 }
-//
+
+// Creates a basic queue to share between processes using `mmap`
+message_queue_t *create_queue(size_t capacity) {
+    // Create our dynamic array for our queue
+    message_t *items = mmap(
+        NULL,
+        capacity * sizeof(message_t),
+        PROT_READ | PROT_WRITE,
+        MAP_SHARED | MAP_ANONYMOUS,
+        -1,
+        0);
+
+    // Create a separate mapping in memory for our actual queue
+    message_queue_t *queue = mmap(
+        NULL, sizeof(message_queue_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+    memset(items, capacity, MESSAGE_OPEN_SLOT);
+
+    // Initialize our queue data
+    queue_init(queue);
+
+    // Initialize items & capacity of queue
+    queue->items = items;
+    queue->capacity = capacity;
+    return queue;
+}
 
 int main() {
     pid_t pid;
     key_t key = ftok(".", 'R');              // IPC Key
     msgq_id = msgget(key, IPC_CREAT | 0666); // Message queue ID
+    int req_queue_id = shmget(key, sizeof(message_t), IPC_CREAT | 0666);
     shm_id = shmget(key, sizeof(shared_memory_t),
                     IPC_CREAT | 0666);                         // Shared memory ID
     shared_memory = (shared_memory_t *)shmat(shm_id, NULL, 0); // Allocate shm
-    // log_file = fopen("simulation.log", "w");                   // Open simulation.log file
+
+    shared_memory->request_queue = create_queue(MAX_QUEUE_SIZE);
+    shared_memory->response_queue = create_queue(MAX_QUEUE_SIZE);
 
     pthread_mutexattr_t attrb;
     pthread_mutexattr_init(&attrb);
@@ -350,7 +381,6 @@ int main() {
         printf("parse completed without errors\n\n");
 
     // Fork one process per train
-    // Author: Erin Dunlap
     for (int i = 0; i < shared_memory->num_trains; i++) {
         pid = fork();
         if (pid == 0) { // Child process (trains)
