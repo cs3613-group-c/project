@@ -2,8 +2,8 @@
  * Group C
  *
  * Author: Erin Dunlap
- * Email:
- * Date:
+ * Email: erin.dunlap10@okstate.edu
+ * Date: 
  * Description:
  */
 #include "logger.h"

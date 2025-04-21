@@ -386,6 +386,16 @@ int main() {
             &shared_memory->num_intersections,
             &shared_memory->num_trains);
     //exiting for bad exit codes handled internally
+
+    // Logging the initialized intersections
+    log_event("SERVER: Initialized intersections:");    
+    for(int i = 0; i < shared_memory->num_intersections; i++) {
+        intersection_t *inter = &shared_memory->intersections[i];
+        const char *type_str = (inter->type == INTERSECTION_MUTEX) ? "Mutex" : "Semaphore";
+        char buffer[MAX_LOG_SIZE];
+        snprintf(buffer, sizeof(buffer), "- %s (%s, Capacity=%d)", inter->name, type_str, inter->capacity);
+        log_event(buffer);
+    }
     
     // Fork one process per train
     for (int i = 0; i < shared_memory->num_trains; i++) {
