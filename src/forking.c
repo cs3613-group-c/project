@@ -2,9 +2,10 @@
  * Group C
  *
  * Author: Erin Dunlap
- * Email:
- * Date:
- * Description:
+ * Email: erin.dunlap10@okstate.edu
+ * Date: 3/28/2025
+ * Description: forking file that forks the child process and ensures that the parent process acts as a 
+ * central controller
  */
 #include "constants.h"
 #include "structures.h"

@@ -4,8 +4,6 @@
 //  Date: 4/20/2025
 //  Description: Test for table function, ensuring correct operation
 //
-
-
 #include "parse.h"
 #include "structures.h"
 #include "table.h"

@@ -1,3 +1,9 @@
+//  Group C
+//  Author: Gabe Cornelius
+//  Email: gabriel.j.cornelius@okstate.edu
+//  Date: 4/20/2025
+//  Description: Test for parse function, ensuring correct operation
+//
 #include "constants.h"
 #include "parse.h"
 #include "structures.h"
@@ -11,12 +17,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-//  Group C
-//  Author: Gabe Cornelius
-//  Email: gabriel.j.cornelius@okstate.edu
-//  Date: 4/20/2025
-//  Description: Test for parse function, ensuring correct operation
-//
+
 bool test_should_parse_successfully() {
     parse_t ret = {{0}, 0, {0}, 0, 0};
     intersection_t sctns[MAX_INTERSECTIONS] = {0};

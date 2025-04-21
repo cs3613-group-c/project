@@ -2,9 +2,9 @@
  * Group C
  *
  * Author: Erin Dunlap
- * Email:
- * Date:
- * Description:
+ * Email: erin.dunlap10@oksate.edu
+ * Date: 3/28/2025
+ * Description: header file for forking implementation. the fork_trains function makes sure that a separate process gets made for each train
  */
 #ifndef FORKING_H
 #define FORKING_H

@@ -1,3 +1,11 @@
+/*
+ * Group C
+ *
+ * Name: Em Jordan
+ * Email: em.jordan@okstate.edu
+ * Date: 4/17/2025
+ * Description: Ensures that both trains and servers alike send/receive data as they are supposed to
+ */
 #include "message.h"
 #include "test_runner.h"
 #include <stdbool.h>

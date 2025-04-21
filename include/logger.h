@@ -2,9 +2,11 @@
  * Group C
  *
  * Author: Erin Dunlap
- * Email:
- * Date:
- * Description:
+ * Email: erin.dunlap10@okstate.edu
+ * Date: 4/6/2025
+ * Description: header file that defines the functions for logging events in the simulation.
+ * it handles handles opening and closing up the log file, writing messages with timestamps, 
+ * and keeping track of a shared simulated clock
  */
 #ifndef LOGGER_H
 #define LOGGER_H
